@@ -7,11 +7,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
-public class FantasyPlayer extends AuditModel {
+@Table(name="\"User\"")
+public class User extends AuditModel {
 
     @Id
     private Long id;

@@ -3,6 +3,7 @@ package com.example.ChampionshipFantasy.model;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
@@ -24,6 +25,9 @@ public abstract class Player extends AuditModel {
     private Long id;
     private String name;
     private String nationality;
+
+    @OneToMany(mappedBy = "player")
+    private List<PlayerGameweek> playerGameweeks;
 
     @JsonProperty(value = "teamId")
     @JsonIdentityReference(alwaysAsId = true)

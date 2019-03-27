@@ -17,12 +17,22 @@ public class FantasyTeam extends AuditModel {
     private String name;
     private Integer totalPoints;
 
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            mappedBy = "fantasyTeams",
+            targetEntity = League.class
+    )
+    private List<League> leagues;
+
     @JsonIdentityReference(alwaysAsId = true)
     @OneToOne
-    private FantasyPlayer fantasyPlayer;
+    private User user;
+
+//    @OneToMany(mappedBy = "fantasyTeam")
+//    private List<Pick> picks;
 
     @OneToMany(mappedBy = "fantasyTeam")
-    private List<Pick> picks;
+    private List<FantasyTeamGameweek> fantasyTeamGameweeks;
 
     public Long getId() {
         return id;
@@ -48,19 +58,19 @@ public class FantasyTeam extends AuditModel {
         this.totalPoints = totalPoints;
     }
 
-    public FantasyPlayer getFantasyPlayer() {
-        return fantasyPlayer;
+    public User getUser() {
+        return user;
     }
 
-    public void setFantasyPlayer(FantasyPlayer fantasyPlayer) {
-        this.fantasyPlayer = fantasyPlayer;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public List<Pick> getPicks() {
-        return picks;
-    }
-
-    public void setPicks(List<Pick> picks) {
-        this.picks = picks;
-    }
+//    public List<Pick> getPicks() {
+//        return picks;
+//    }
+//
+//    public void setPicks(List<Pick> picks) {
+//        this.picks = picks;
+//    }
 }
