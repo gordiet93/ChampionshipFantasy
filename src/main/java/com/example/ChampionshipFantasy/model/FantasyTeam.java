@@ -2,7 +2,6 @@ package com.example.ChampionshipFantasy.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
@@ -18,17 +17,12 @@ public class FantasyTeam extends AuditModel {
     private String name;
     private Integer totalPoints;
 
-    @JsonProperty(value = "fantasyPlayerId")
     @JsonIdentityReference(alwaysAsId = true)
-//    @JoinColumn(name = "fantasy_player_id", insertable = false, updatable = false)
-    @OneToOne(targetEntity = FantasyPlayer.class, fetch = FetchType.LAZY)
+    @OneToOne
     private FantasyPlayer fantasyPlayer;
 
-//    @Column(name = "fantasy_player_id")
-//    private Long fantasyPlayerId;
-
-    @OneToMany
-    private List<Player> players;
+    @OneToMany(mappedBy = "fantasyTeam")
+    private List<Pick> picks;
 
     public Long getId() {
         return id;
@@ -54,14 +48,6 @@ public class FantasyTeam extends AuditModel {
         this.totalPoints = totalPoints;
     }
 
-//    public Long getFantasyPlayerId() {
-//        return fantasyPlayerId;
-//    }
-//
-//    public void setFantasyPlayerId(Long fantasyPlayerId) {
-//        this.fantasyPlayerId = fantasyPlayerId;
-//    }
-
     public FantasyPlayer getFantasyPlayer() {
         return fantasyPlayer;
     }
@@ -70,11 +56,11 @@ public class FantasyTeam extends AuditModel {
         this.fantasyPlayer = fantasyPlayer;
     }
 
-    public List<Player> getPlayers() {
-        return players;
+    public List<Pick> getPicks() {
+        return picks;
     }
 
-    public void setPlayers(List<Player> players) {
-        this.players = players;
+    public void setPicks(List<Pick> picks) {
+        this.picks = picks;
     }
 }

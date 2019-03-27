@@ -2,7 +2,6 @@ package com.example.ChampionshipFantasy.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.Entity;
@@ -19,7 +18,6 @@ public class FantasyPlayer extends AuditModel {
     private String name;
     private String email;
 
-    @JsonProperty(value = "fantasyTeamId")
     @JsonIdentityReference(alwaysAsId = true)
     @OneToOne
     private FantasyTeam fantasyTeam;

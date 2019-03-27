@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "position", discriminatorType = DiscriminatorType.STRING)
