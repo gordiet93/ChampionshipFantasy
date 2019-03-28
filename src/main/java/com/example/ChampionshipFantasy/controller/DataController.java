@@ -46,7 +46,7 @@ public class DataController {
             System.out.println(e.getMessage());
         }
 
-        int count = 1;
+        int count = 0;
 
         if (competition !=null ) {
             for (Team team : competition.getTeams()) {

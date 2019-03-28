@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
@@ -21,13 +22,21 @@ import java.util.List;
 })
 public abstract class Player extends AuditModel {
 
+    private static final int ABOVE_MINS_THRESHOLD_POINTS = 2;
+    private static final int BELOW_MINS_THRESHOLD_POINTS = 1;
+    private static final int MINS_THRESHOLD = 60;
+
     @Id
     private Long id;
     private String name;
     private String nationality;
 
-    @OneToMany(mappedBy = "player")
-    private List<PlayerGameweek> playerGameweeks;
+//    @OneToMany(mappedBy = "player")
+//    private List<PlayerGameweek> playerGameweeks;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="player")
+    @MapKey(name = "gameweek")
+    private Map<Long, PlayerGameweek> playerGameweekMap;
 
     @JsonProperty(value = "teamId")
     @JsonIdentityReference(alwaysAsId = true)
@@ -39,6 +48,22 @@ public abstract class Player extends AuditModel {
 
     @JsonIgnore
     public abstract int getCleanSheetPoints();
+
+    public static int getAboveMinsThresholdPoints() {
+        return ABOVE_MINS_THRESHOLD_POINTS;
+    }
+
+    public static int getBelowMinsThresholdPoints() {
+        return BELOW_MINS_THRESHOLD_POINTS;
+    }
+
+    public static int getMinsThreshold() {
+        return MINS_THRESHOLD;
+    }
+
+    public Map<Long, PlayerGameweek> getPlayerGameweekMap() {
+        return playerGameweekMap;
+    }
 
     public Long getId() {
         return id;

@@ -1,17 +1,22 @@
 package com.example.ChampionshipFantasy.model;
 
+import org.hibernate.annotations.Formula;
+
 import javax.persistence.*;
 
 @Entity
-public class Pick extends AuditModel {
+public class Selection extends AuditModel {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
+    @Formula("select p.points from player_gameweek p where p.fantasy_team_gameweek_id = fantasyteam_week")
+    private Integer points;
+
     @ManyToOne
-    private FantasyTeam fantasyTeam;
+    private FantasyTeamGameweek fantasyTeamGameweek;
 
     @ManyToOne
     private Player player;
@@ -24,14 +29,6 @@ public class Pick extends AuditModel {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public FantasyTeam getFantasyTeam() {
-        return fantasyTeam;
-    }
-
-    public void setFantasyTeam(FantasyTeam fantasyTeam) {
-        this.fantasyTeam = fantasyTeam;
     }
 
     public Player getPlayer() {
