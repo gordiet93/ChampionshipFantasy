@@ -1,5 +1,7 @@
 package com.example.ChampionshipFantasy.model;
 
+import com.example.ChampionshipFantasy.model.player.Player;
+
 import javax.persistence.PrePersist;
 
 public class PlayerGameweekListener {
@@ -16,7 +18,7 @@ public class PlayerGameweekListener {
         total += (pG.getMinutesPlayed() < Player.getMinsThreshold())
                 ? Player.getBelowMinsThresholdPoints() : Player.getAboveMinsThresholdPoints();
 
-        total += pG.getGoalsScored() * player.getGoalPoints();
+//        total += pG.getGoalsScored() * player.getGoalPoints();
 
         return total;
     }

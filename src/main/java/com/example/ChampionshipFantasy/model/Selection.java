@@ -1,5 +1,6 @@
 package com.example.ChampionshipFantasy.model;
 
+import com.example.ChampionshipFantasy.model.player.Player;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;

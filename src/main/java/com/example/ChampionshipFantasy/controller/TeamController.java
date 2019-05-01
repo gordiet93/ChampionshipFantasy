@@ -1,6 +1,6 @@
 package com.example.ChampionshipFantasy.controller;
 
-import com.example.ChampionshipFantasy.model.Player;
+import com.example.ChampionshipFantasy.model.player.Player;
 import com.example.ChampionshipFantasy.model.Team;
 import com.example.ChampionshipFantasy.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;

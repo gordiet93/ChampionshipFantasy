@@ -1,4 +1,4 @@
-package com.example.ChampionshipFantasy.model.Deserializer;
+package com.example.ChampionshipFantasy.deserializer;
 
 import com.example.ChampionshipFantasy.model.Team;
 import com.fasterxml.jackson.core.JsonParser;
@@ -23,11 +23,9 @@ public class TeamDeserializer extends StdDeserializer<Team> {
     public Team deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
         JsonNode located = node.path("squad");
-        Team team = new Team();
-        team.setId((node.get("id")).asLong());
-        team.setName(node.get("name").asText());
-        team.setVenue(node.get("venue").asText());
-
+//        Team team = new Team();
+//        team.setId((node.get("id")).asLong());
+//        team.setName(node.get("name").asText());
 
         return null;
     }

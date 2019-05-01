@@ -1,15 +1,15 @@
 package com.example.ChampionshipFantasy.model;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import com.example.ChampionshipFantasy.model.player.Player;
+
+import javax.persistence.*;
 
 @Entity
 @EntityListeners(PlayerGameweekListener.class)
 public class PlayerGameweek extends AuditModel {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private Long id;
 
     @ManyToOne
@@ -23,7 +23,13 @@ public class PlayerGameweek extends AuditModel {
     private Integer assists;
     private Integer minutesPlayed;
 
-    public PlayerGameweek() {}
+    public PlayerGameweek(Player player, Gameweek gameweek, Integer goalsScored, Integer assists, Integer minutesPlayed) {
+        this.player = player;
+        this.gameweek = gameweek;
+        this.goalsScored = goalsScored;
+        this.assists = assists;
+        this.minutesPlayed = minutesPlayed;
+    }
 
     public Long getId() {
         return id;

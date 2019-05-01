@@ -1,11 +1,12 @@
 package com.example.ChampionshipFantasy.controller;
 
-import com.example.ChampionshipFantasy.model.Competition;
-import com.example.ChampionshipFantasy.model.Player;
+import com.example.ChampionshipFantasy.model.Fixture;
+import com.example.ChampionshipFantasy.model.Gameweek;
+import com.example.ChampionshipFantasy.model.PlayerGameweek;
+import com.example.ChampionshipFantasy.model.player.Player;
 import com.example.ChampionshipFantasy.model.Team;
-import com.example.ChampionshipFantasy.repository.PlayerRepository;
-import com.example.ChampionshipFantasy.repository.TeamRepository;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.example.ChampionshipFantasy.repository.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,66 +14,120 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/data")
 public class DataController {
 
     @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
+    private GameweekRepository gameweekRepository;
+
+    @Autowired
     private PlayerRepository playerRepository;
 
     @Autowired
-    private TeamRepository teamRepository;
+    private FixtureRepository fixtureRepository;
 
-    @PostMapping("/load")
+    @Autowired
+    private PlayerGameweekRepository playerGameweekRepository;
+
+    @PostMapping("/loadteamsandplayers")
     public void load() {
         loadData();
     }
 
-    public void loadData() {
+    @PostMapping("/loadgameweeks")
+    public void gameweeks() {
+        loadGameweeks();
+    }
 
+    @PostMapping("/loadlive")
+    public void live() {
+        loadlive();
+    }
+
+    @PostMapping("/loadfixtures")
+    public void fix() {
+        loadFixtures();
+    }
+
+    //refactor
+    private void loadData() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(
-                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Competition competition = new Competition();
         try {
-            competition = mapper.readValue(callURL("http://api.football-data.org/v2/competitions/ELC/teams"), Competition.class);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+            JsonNode node = mapper.readTree(new File("src\\main\\resources\\TeamAndPlayer.json"));
+            List<Team> teamList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Team[].class));
 
-        int count = 0;
-
-        if (competition !=null ) {
-            for (Team team : competition.getTeams()) {
-                count++;
-
-                if (count % 5 == 0) {
-                    try {
-                        TimeUnit.SECONDS.sleep(30);
-                    } catch (InterruptedException e) {
-                        System.out.println(e.getMessage());
-                    }
+            for (Team team : teamList) {
+                for (Player player : team.getPlayers()) {
+                    player.setTeam(team);
                 }
-
-                Team team1 = new Team();
-                try {
-                    team1 = mapper.readValue(callURL("http://api.football-data.org/v2/teams/" + team.getId()), Team.class);
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-
-                for (Player player : team1.getPlayers()) {
-                    player.setTeam(team1);
-                }
-
-                teamRepository.save(team1);
+                teamRepository.save(team);
             }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void loadGameweeks() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode node = mapper.readTree(new File("src\\main\\resources\\gameweeks.json"));
+            List<Gameweek> teamList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Gameweek[].class));
+
+            for (Gameweek gameweek : teamList) {
+                gameweekRepository.save(gameweek);
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void loadlive() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode node = mapper.readTree(new File("src\\main\\resources\\HeartsHibsLive.json"));
+            JsonNode nodeaye = node.get("data").findValue("lineup").findValue("data");
+
+            Gameweek gameweek = gameweekRepository.getOne(node.get("data").findValue("round_id").asLong());
+
+            for (JsonNode aye : nodeaye) {
+                Player player = playerRepository.findById(aye.findValue("player_id").asLong()).orElse(null);
+
+                if (player != null) {
+                    player.setName(aye.findValue("player_name").toString());
+                    playerRepository.save(player);
+                }
+
+                playerGameweekRepository.save(new PlayerGameweek(player, gameweek, 0, 0, 0));
+            }
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void loadFixtures() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode node = mapper.readTree(new File("src\\main\\resources\\RangersUpcomingfixture.json"));
+            JsonNode nodeaye = node.get("data").findValue("upcoming").findValue("data");
+
+            List<Fixture> fixtures = Arrays.asList(mapper.readValue(nodeaye.traverse(), Fixture[].class));
+
+            fixtureRepository.saveAll(fixtures);
+        } catch (IOException e) {
+            System.out.println(e);
         }
     }
 

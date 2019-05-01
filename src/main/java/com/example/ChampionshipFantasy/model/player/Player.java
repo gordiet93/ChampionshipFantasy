@@ -1,24 +1,22 @@
-package com.example.ChampionshipFantasy.model;
+package com.example.ChampionshipFantasy.model.player;
 
+import com.example.ChampionshipFantasy.model.*;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Map;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "position", discriminatorType = DiscriminatorType.STRING)
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        property = "position")
+        property = "position_id")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Attacker.class, name = "Attacker"),
-        @JsonSubTypes.Type(value = Midfielder.class, name = "Midfielder"),
-        @JsonSubTypes.Type(value = Defender.class, name = "Defender"),
-        @JsonSubTypes.Type(value = GoalKeeper.class, name = "Goalkeeper"),
-        @JsonSubTypes.Type(value = Coach.class, name = "null")
+        @JsonSubTypes.Type(value = Attacker.class, name = "4"),
+        @JsonSubTypes.Type(value = Midfielder.class, name = "3"),
+        @JsonSubTypes.Type(value = Defender.class, name = "2"),
+        @JsonSubTypes.Type(value = GoalKeeper.class, name = "1")
 })
 public abstract class Player extends AuditModel {
 
@@ -27,9 +25,11 @@ public abstract class Player extends AuditModel {
     private static final int MINS_THRESHOLD = 60;
 
     @Id
+    @JsonProperty("player_id")
     private Long id;
     private String name;
     private String nationality;
+    private Integer Number;
 
 //    @OneToMany(mappedBy = "player")
 //    private List<PlayerGameweek> playerGameweeks;
@@ -38,7 +38,7 @@ public abstract class Player extends AuditModel {
     @MapKey(name = "gameweek")
     private Map<Long, PlayerGameweek> playerGameweekMap;
 
-    @JsonProperty(value = "teamId")
+    @JsonProperty(value = "team_Id")
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Team team;
@@ -95,5 +95,13 @@ public abstract class Player extends AuditModel {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public Integer getNumber() {
+        return Number;
+    }
+
+    public void setNumber(Integer number) {
+        Number = number;
     }
 }
