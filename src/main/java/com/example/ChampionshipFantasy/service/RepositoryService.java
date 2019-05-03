@@ -2,7 +2,9 @@ package com.example.ChampionshipFantasy.service;
 
 import com.example.ChampionshipFantasy.model.Gameweek;
 import com.example.ChampionshipFantasy.model.Team;
+import com.example.ChampionshipFantasy.model.player.Player;
 import com.example.ChampionshipFantasy.repository.GameweekRepository;
+import com.example.ChampionshipFantasy.repository.PlayerRepository;
 import com.example.ChampionshipFantasy.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ public class RepositoryService {
     @Autowired
     private GameweekRepository gameweekRepository;
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     public RepositoryService() {
         RepositoryService.instance = this;
     }
@@ -29,4 +34,6 @@ public class RepositoryService {
     public Gameweek getGameweekReference(Long id) {
         return gameweekRepository.getOne(id);
     }
+
+    public Player getPlayerReference(Long id ) { return playerRepository.getOne(id); }
 }

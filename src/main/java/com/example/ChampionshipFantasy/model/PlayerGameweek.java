@@ -1,6 +1,9 @@
 package com.example.ChampionshipFantasy.model;
 
 import com.example.ChampionshipFantasy.model.player.Player;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 
@@ -13,23 +16,34 @@ public class PlayerGameweek extends AuditModel {
     private Long id;
 
     @ManyToOne
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("player_id")
     private Player player;
 
     @ManyToOne
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("gameweek_id")
     private Gameweek gameweek;
 
-    private Integer points;
+    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 3)")
     private Integer goalsScored;
+
+    @Formula("(SELECT count(*) FROM event e WHERE e.related_player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 3)")
     private Integer assists;
+
     private Integer minutesPlayed;
 
-    public PlayerGameweek(Player player, Gameweek gameweek, Integer goalsScored, Integer assists, Integer minutesPlayed) {
+    private Integer points;
+
+    public PlayerGameweek(Player player, Gameweek gameweek) {
         this.player = player;
         this.gameweek = gameweek;
-        this.goalsScored = goalsScored;
-        this.assists = assists;
-        this.minutesPlayed = minutesPlayed;
+        this.goalsScored = 0;
+        this.assists = 0;
+        this.minutesPlayed = 0;
     }
+
+    public PlayerGameweek() {}
 
     public Long getId() {
         return id;

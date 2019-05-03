@@ -1,9 +1,7 @@
 package com.example.ChampionshipFantasy.deserializer;
 
-import com.example.ChampionshipFantasy.model.Fixture;
-import com.example.ChampionshipFantasy.model.FixtureStatus;
-import com.example.ChampionshipFantasy.model.Gameweek;
-import com.example.ChampionshipFantasy.model.Team;
+import com.example.ChampionshipFantasy.model.*;
+import com.example.ChampionshipFantasy.model.Event;
 import com.example.ChampionshipFantasy.service.RepositoryService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -12,6 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class FixtureDeserializer extends JsonDeserializer<Fixture> {
 
@@ -33,6 +33,17 @@ public class FixtureDeserializer extends JsonDeserializer<Fixture> {
         Team awayTeam = repositoryService.getTeamReference(node.get("visitorteam_id").asLong());
         FixtureStatus fixtureStatus = FixtureStatus.valueOf(node.get("time").get("status").textValue());
 
-        return new Fixture(id, gameweek, homeTeam, awayTeam, fixtureStatus);
+        List<Event> events = Arrays.asList(mapper.readValue(node.get("events").get("data").traverse(), Event[].class));
+
+        Fixture fixture = new Fixture(id, gameweek, homeTeam, awayTeam, fixtureStatus);
+
+        for (Event event : events) {
+            event.setGameweek(gameweek);
+            event.setFixture(fixture);
+        }
+
+        fixture.setEvents(events);
+
+        return fixture;
     }
 }

@@ -1,13 +1,11 @@
 package com.example.ChampionshipFantasy.controller;
 
-import com.example.ChampionshipFantasy.model.Fixture;
-import com.example.ChampionshipFantasy.model.Gameweek;
-import com.example.ChampionshipFantasy.model.PlayerGameweek;
+import com.example.ChampionshipFantasy.model.*;
 import com.example.ChampionshipFantasy.model.player.Player;
-import com.example.ChampionshipFantasy.model.Team;
 import com.example.ChampionshipFantasy.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.print.PageLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,9 +81,9 @@ public class DataController {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode node = mapper.readTree(new File("src\\main\\resources\\gameweeks.json"));
-            List<Gameweek> teamList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Gameweek[].class));
+            List<Gameweek> gameweekList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Gameweek[].class));
 
-            for (Gameweek gameweek : teamList) {
+            for (Gameweek gameweek : gameweekList) {
                 gameweekRepository.save(gameweek);
             }
         } catch (IOException e) {
@@ -96,21 +94,32 @@ public class DataController {
     private void loadlive() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode node = mapper.readTree(new File("src\\main\\resources\\HeartsHibsLive.json"));
-            JsonNode nodeaye = node.get("data").findValue("lineup").findValue("data");
+            JsonNode base = mapper.readTree(new File("src\\main\\resources\\HeartsHibsLive.json"));
+            JsonNode lineup = base.get("data").findValue("lineup").findValue("data");
 
-            Gameweek gameweek = gameweekRepository.getOne(node.get("data").findValue("round_id").asLong());
+            Fixture fixture = mapper.readValue(base.get("data").traverse(), Fixture.class);
+            fixtureRepository.save(fixture);
 
-            for (JsonNode aye : nodeaye) {
+            Gameweek gameweek = fixture.getGameweek();
+
+            for (JsonNode aye : lineup) {
                 Player player = playerRepository.findById(aye.findValue("player_id").asLong()).orElse(null);
 
                 if (player != null) {
-                    player.setName(aye.findValue("player_name").toString());
+                    player.setName(aye.findValue("player_name").textValue());
                     playerRepository.save(player);
-                }
 
-                playerGameweekRepository.save(new PlayerGameweek(player, gameweek, 0, 0, 0));
+                    PlayerGameweek playerGameweek = player.getPlayerGameweekMap().get(gameweek);
+
+                    if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
+
+                    playerGameweek.setMinutesPlayed(aye.get("stats").get("other").findValue("minutes_played").asInt());
+
+                    playerGameweekRepository.save(playerGameweek);
+
+                }
             }
+
 
         } catch (IOException e) {
             System.out.println(e);

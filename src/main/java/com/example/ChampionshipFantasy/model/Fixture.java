@@ -4,9 +4,8 @@ import com.example.ChampionshipFantasy.deserializer.FixtureDeserializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,6 +23,9 @@ public class Fixture {
 
     @ManyToOne
     private Team awayTeam;
+
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL)
+    private List<Event> events;
 
     private FixtureStatus status;
 
@@ -86,4 +88,13 @@ public class Fixture {
 //    private void setGameweek(Long id) {
 //        this.gameweek = new Gameweek(id);
 //    }
+
+
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
 }
