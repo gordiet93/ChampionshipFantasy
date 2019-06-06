@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/gameweeks")
 public class GameweekController {
 
-    @Autowired
     private GameweekRepository gameweekRepository;
+
+    @Autowired
+    public GameweekController(GameweekRepository gameweekRepository) {
+        this.gameweekRepository = gameweekRepository;
+    }
 
     @GetMapping("/{id}")
     public Gameweek findOne(@PathVariable("id") Long id) {

@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/playergameweeks")
 public class PlayerGameweekController {
 
-    @Autowired
     private PlayerGameweekRepository playerGameweekRepository;
+
+    @Autowired
+    public PlayerGameweekController(PlayerGameweekRepository playerGameweekRepository) {
+        this.playerGameweekRepository = playerGameweekRepository;
+    }
 
     @GetMapping("/{id}")
     public PlayerGameweek findOne(@PathVariable("id") Long id) {

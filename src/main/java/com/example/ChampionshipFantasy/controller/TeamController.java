@@ -15,8 +15,12 @@ import java.util.List;
 @RequestMapping("/teams")
 public class TeamController {
 
-    @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    public TeamController(TeamRepository teamRepository) {
+        this.teamRepository = teamRepository;
+    }
 
     @GetMapping
     public List<Team> findAll() {

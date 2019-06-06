@@ -5,7 +5,6 @@ import com.example.ChampionshipFantasy.model.player.Player;
 import com.example.ChampionshipFantasy.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.print.PageLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,20 +23,21 @@ import java.util.List;
 @RequestMapping("/data")
 public class DataController {
 
-    @Autowired
     private TeamRepository teamRepository;
-
-    @Autowired
     private GameweekRepository gameweekRepository;
-
-    @Autowired
     private PlayerRepository playerRepository;
-
-    @Autowired
     private FixtureRepository fixtureRepository;
+    private PlayerGameweekRepository playerGameweekRepository;
 
     @Autowired
-    private PlayerGameweekRepository playerGameweekRepository;
+    public DataController(TeamRepository teamRepository, GameweekRepository gameweekRepository, PlayerRepository playerRepository,
+                          FixtureRepository fixtureRepository, PlayerGameweekRepository playerGameweekRepository) {
+        this.teamRepository = teamRepository;
+        this.gameweekRepository = gameweekRepository;
+        this.playerRepository = playerRepository;
+        this.fixtureRepository = fixtureRepository;
+        this.playerGameweekRepository = playerGameweekRepository;
+    }
 
     @PostMapping("/loadteamsandplayers")
     public void load() {
@@ -63,7 +63,7 @@ public class DataController {
     private void loadData() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode node = mapper.readTree(new File("src\\main\\resources\\TeamAndPlayer.json"));
+            JsonNode node = mapper.readTree(new File("src/main/resources/TeamAndPlayer.json"));
             List<Team> teamList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Team[].class));
 
             for (Team team : teamList) {
@@ -80,7 +80,7 @@ public class DataController {
     private void loadGameweeks() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode node = mapper.readTree(new File("src\\main\\resources\\gameweeks.json"));
+            JsonNode node = mapper.readTree(new File("src/main/resources/gameweeks.json"));
             List<Gameweek> gameweekList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Gameweek[].class));
 
             for (Gameweek gameweek : gameweekList) {
@@ -94,7 +94,7 @@ public class DataController {
     private void loadlive() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode base = mapper.readTree(new File("src\\main\\resources\\HeartsHibsLive.json"));
+            JsonNode base = mapper.readTree(new File("src/main/resources/HeartsHibsLive.json"));
             JsonNode lineup = base.get("data").findValue("lineup").findValue("data");
 
             Fixture fixture = mapper.readValue(base.get("data").traverse(), Fixture.class);
@@ -129,7 +129,7 @@ public class DataController {
     private void loadFixtures() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode node = mapper.readTree(new File("src\\main\\resources\\RangersUpcomingfixture.json"));
+            JsonNode node = mapper.readTree(new File("src/main/resources/RangersUpcomingfixture.json"));
             JsonNode nodeaye = node.get("data").findValue("upcoming").findValue("data");
 
             List<Fixture> fixtures = Arrays.asList(mapper.readValue(nodeaye.traverse(), Fixture[].class));

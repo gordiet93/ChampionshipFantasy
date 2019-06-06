@@ -3,6 +3,7 @@ package com.example.ChampionshipFantasy.controller;
 import com.example.ChampionshipFantasy.model.FantasyTeam;
 import com.example.ChampionshipFantasy.repository.FantasyTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,8 +12,12 @@ import java.util.List;
 @RequestMapping("/fantasyteam")
 public class FantasyTeamController {
 
-    @Autowired
     private FantasyTeamRepository fantasyTeamRepository;
+
+    @Autowired
+    public FantasyTeamController(FantasyTeamRepository fantasyTeamRepository) {
+        this.fantasyTeamRepository = fantasyTeamRepository;
+    }
 
     @GetMapping
     public List<FantasyTeam> findAll() {
@@ -24,8 +29,8 @@ public class FantasyTeamController {
         return fantasyTeamRepository.findById(id).orElse(null);
     }
 
-    @PostMapping
-    public void saveFantasyTeam(FantasyTeam fantasyTeam) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void save(@RequestBody FantasyTeam fantasyTeam) {
         fantasyTeamRepository.save(fantasyTeam);
     }
 }

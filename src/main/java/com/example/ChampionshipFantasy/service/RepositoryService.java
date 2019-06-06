@@ -14,16 +14,16 @@ public class RepositoryService {
 
     public static RepositoryService instance;
 
-    @Autowired
+    private GameweekRepository gameweekRepository;
+    private PlayerRepository playerRepository;
     private TeamRepository teamRepository;
 
     @Autowired
-    private GameweekRepository gameweekRepository;
-
-    @Autowired
-    private PlayerRepository playerRepository;
-
-    public RepositoryService() {
+    public RepositoryService(GameweekRepository gameweekRepository, PlayerRepository playerRepository,
+                             TeamRepository teamRepository) {
+        this.gameweekRepository = gameweekRepository;
+        this.playerRepository = playerRepository;
+        this.teamRepository = teamRepository;
         RepositoryService.instance = this;
     }
 
