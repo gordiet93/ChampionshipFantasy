@@ -13,7 +13,6 @@ public class Team extends AuditModel {
 
     @Id
     private Long id;
-
     private String name;
 
     @JsonProperty(value = "squad", access = JsonProperty.Access.WRITE_ONLY)

@@ -3,8 +3,10 @@ package com.example.ChampionshipFantasy.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -12,28 +14,36 @@ import java.util.List;
 public class FantasyTeam extends AuditModel {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String name;
 
+    @Formula("(SELECT SUM(f.points) FROM fantasy_team_gameweek f WHERE f.fantasy_team_id = id)")
     private Integer totalPoints;
 
     @JsonIdentityReference(alwaysAsId = true)
     @OneToOne
     private User user;
 
-    @ManyToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            mappedBy = "fantasyTeams",
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fantasyTeams",
             targetEntity = League.class
     )
     private List<League> leagues;
 
-//    @OneToMany(mappedBy = "fantasyTeam")
-//    private List<Selection> selections;
-
-    @OneToMany(mappedBy = "fantasyTeam")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "fantasyTeam")
     private List<FantasyTeamGameweek> fantasyTeamGameweeks;
+
+    @NotNull
+    @OneToMany(mappedBy = "fantasyTeam", cascade = CascadeType.ALL)
+    private List<SelectionActive> selections;
+
+    public FantasyTeam() {
+    }
+
+    public FantasyTeam(String name, User user) {
+        this.name = name;
+        this.user = user;
+    }
 
     public Long getId() {
         return id;
@@ -67,11 +77,11 @@ public class FantasyTeam extends AuditModel {
         this.user = user;
     }
 
-//    public List<Selection> getPicks() {
-//        return picks;
-//    }
-//
-//    public void setPicks(List<Selection> picks) {
-//        this.picks = picks;
-//    }
+    public List<SelectionActive> getSelections() {
+        return selections;
+    }
+
+    public void setSelections(List<SelectionActive> selections) {
+        this.selections = selections;
+    }
 }

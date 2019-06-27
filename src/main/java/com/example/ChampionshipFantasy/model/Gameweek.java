@@ -23,7 +23,7 @@ public class Gameweek implements Serializable {
         this.id = id;
     }
 
-    public void setId(Long id) {
+    public void setId(Long id)  {
         this.id = id;
     }
 

@@ -102,25 +102,21 @@ public class DataController {
 
             Gameweek gameweek = fixture.getGameweek();
 
-            for (JsonNode aye : lineup) {
-                Player player = playerRepository.findById(aye.findValue("player_id").asLong()).orElse(null);
+            for (JsonNode jsonNode : lineup) {
+                Player player = playerRepository.findById(jsonNode.findValue("player_id").asLong()).orElse(null);
 
                 if (player != null) {
-                    player.setName(aye.findValue("player_name").textValue());
+                    player.setName(jsonNode.findValue("player_name").textValue());
                     playerRepository.save(player);
 
                     PlayerGameweek playerGameweek = player.getPlayerGameweekMap().get(gameweek);
-
                     if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
 
-                    playerGameweek.setMinutesPlayed(aye.get("stats").get("other").findValue("minutes_played").asInt());
-
+                    playerGameweek.setMinutesPlayed(jsonNode.get("stats").get("other").findValue("minutes_played").asInt());
                     playerGameweekRepository.save(playerGameweek);
 
                 }
             }
-
-
         } catch (IOException e) {
             System.out.println(e);
         }
