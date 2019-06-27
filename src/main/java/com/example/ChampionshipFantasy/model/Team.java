@@ -1,22 +1,31 @@
 package com.example.ChampionshipFantasy.model;
 
+import com.example.ChampionshipFantasy.deserializer.PlayerListDeserializer;
+import com.example.ChampionshipFantasy.model.player.Player;
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
 import java.util.List;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 public class Team extends AuditModel {
 
     @Id
     private Long id;
     private String name;
-    private String venue;
 
     @JsonProperty(value = "squad", access = JsonProperty.Access.WRITE_ONLY)
+    @JsonDeserialize(using = PlayerListDeserializer.class)
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Player> players;
+
+    public Team() {
+    }
+
+    public Team(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -32,14 +41,6 @@ public class Team extends AuditModel {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getVenue() {
-        return venue;
-    }
-
-    public void setVenue(String venue) {
-        this.venue = venue;
     }
 
     public List<Player> getPlayers() {

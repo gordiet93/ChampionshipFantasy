@@ -1,26 +1,29 @@
 package com.example.ChampionshipFantasy.model;
 
-import org.hibernate.annotations.Formula;
+import com.example.ChampionshipFantasy.model.player.Player;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
 @Entity
-public class Selection extends AuditModel {
+@EntityListeners(SelectionActiveListener.class)
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Selection extends AuditModel {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "id")
     private Long id;
 
-    @Formula("select p.points from player_gameweek p where p.fantasy_team_gameweek_id = fantasyteam_week")
     private Integer points;
 
-    @ManyToOne
-    private FantasyTeamGameweek fantasyTeamGameweek;
+    private Gameweek gameweek;
 
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
+    @JsonProperty(value = "player_Id")
     private Player player;
-
     private boolean captained;
 
     public Long getId() {
@@ -29,6 +32,14 @@ public class Selection extends AuditModel {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 
     public Player getPlayer() {
@@ -45,5 +56,13 @@ public class Selection extends AuditModel {
 
     public void setCaptained(boolean captained) {
         this.captained = captained;
+    }
+
+    public Gameweek getGameweek() {
+        return gameweek;
+    }
+
+    public void setGameweek(Gameweek gameweek) {
+        this.gameweek = gameweek;
     }
 }

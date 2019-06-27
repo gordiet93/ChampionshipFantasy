@@ -1,11 +1,9 @@
 package com.example.ChampionshipFantasy.controller;
 
-import com.example.ChampionshipFantasy.model.Competition;
-import com.example.ChampionshipFantasy.model.Player;
-import com.example.ChampionshipFantasy.model.Team;
-import com.example.ChampionshipFantasy.repository.PlayerRepository;
-import com.example.ChampionshipFantasy.repository.TeamRepository;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.example.ChampionshipFantasy.model.*;
+import com.example.ChampionshipFantasy.model.player.Player;
+import com.example.ChampionshipFantasy.repository.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,66 +11,128 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/data")
 public class DataController {
 
-    @Autowired
-    private PlayerRepository playerRepository;
-
-    @Autowired
     private TeamRepository teamRepository;
+    private GameweekRepository gameweekRepository;
+    private PlayerRepository playerRepository;
+    private FixtureRepository fixtureRepository;
+    private PlayerGameweekRepository playerGameweekRepository;
 
-    @PostMapping("/load")
+    @Autowired
+    public DataController(TeamRepository teamRepository, GameweekRepository gameweekRepository, PlayerRepository playerRepository,
+                          FixtureRepository fixtureRepository, PlayerGameweekRepository playerGameweekRepository) {
+        this.teamRepository = teamRepository;
+        this.gameweekRepository = gameweekRepository;
+        this.playerRepository = playerRepository;
+        this.fixtureRepository = fixtureRepository;
+        this.playerGameweekRepository = playerGameweekRepository;
+    }
+
+    @PostMapping("/loadteamsandplayers")
     public void load() {
         loadData();
     }
 
-    public void loadData() {
+    @PostMapping("/loadgameweeks")
+    public void gameweeks() {
+        loadGameweeks();
+    }
 
+    @PostMapping("/loadlive")
+    public void live() {
+        loadlive();
+    }
+
+    @PostMapping("/loadfixtures")
+    public void fix() {
+        loadFixtures();
+    }
+
+    //refactor
+    private void loadData() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(
-                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Competition competition = new Competition();
         try {
-            competition = mapper.readValue(callURL("http://api.football-data.org/v2/competitions/ELC/teams"), Competition.class);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+            JsonNode node = mapper.readTree(new File("src/main/resources/TeamAndPlayer.json"));
+            List<Team> teamList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Team[].class));
 
-        int count = 0;
-
-        if (competition !=null ) {
-            for (Team team : competition.getTeams()) {
-                count++;
-
-                if (count % 5 == 0) {
-                    try {
-                        TimeUnit.SECONDS.sleep(30);
-                    } catch (InterruptedException e) {
-                        System.out.println(e.getMessage());
-                    }
+            for (Team team : teamList) {
+                for (Player player : team.getPlayers()) {
+                    player.setTeam(team);
                 }
-
-                Team team1 = new Team();
-                try {
-                    team1 = mapper.readValue(callURL("http://api.football-data.org/v2/teams/" + team.getId()), Team.class);
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-
-                for (Player player : team1.getPlayers()) {
-                    player.setTeam(team1);
-                }
-
-                teamRepository.save(team1);
+                teamRepository.save(team);
             }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void loadGameweeks() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode node = mapper.readTree(new File("src/main/resources/gameweeks.json"));
+            List<Gameweek> gameweekList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Gameweek[].class));
+
+            for (Gameweek gameweek : gameweekList) {
+                gameweekRepository.save(gameweek);
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void loadlive() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode base = mapper.readTree(new File("src/main/resources/HeartsHibsLive.json"));
+            JsonNode lineup = base.get("data").findValue("lineup").findValue("data");
+
+            Fixture fixture = mapper.readValue(base.get("data").traverse(), Fixture.class);
+            fixtureRepository.save(fixture);
+
+            Gameweek gameweek = fixture.getGameweek();
+
+            for (JsonNode jsonNode : lineup) {
+                Player player = playerRepository.findById(jsonNode.findValue("player_id").asLong()).orElse(null);
+
+                if (player != null) {
+                    player.setName(jsonNode.findValue("player_name").textValue());
+                    playerRepository.save(player);
+
+                    PlayerGameweek playerGameweek = player.getPlayerGameweekMap().get(gameweek);
+                    if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
+
+                    playerGameweek.setMinutesPlayed(jsonNode.get("stats").get("other").findValue("minutes_played").asInt());
+                    playerGameweekRepository.save(playerGameweek);
+
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void loadFixtures() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode node = mapper.readTree(new File("src/main/resources/RangersUpcomingfixture.json"));
+            JsonNode nodeaye = node.get("data").findValue("upcoming").findValue("data");
+
+            List<Fixture> fixtures = Arrays.asList(mapper.readValue(nodeaye.traverse(), Fixture[].class));
+
+            fixtureRepository.saveAll(fixtures);
+        } catch (IOException e) {
+            System.out.println(e);
         }
     }
 

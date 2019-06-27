@@ -1,4 +1,4 @@
-package com.example.ChampionshipFantasy.model;
+package com.example.ChampionshipFantasy.model.player;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
