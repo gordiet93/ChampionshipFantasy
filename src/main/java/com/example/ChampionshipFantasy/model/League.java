@@ -8,7 +8,6 @@ public class League extends AuditModel {
 
     @Id
     private Long id;
-
     private String name;
 
     @ManyToMany(

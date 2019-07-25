@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 
 @Entity
-@EntityListeners(SelectionActiveListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Selection extends AuditModel {
 

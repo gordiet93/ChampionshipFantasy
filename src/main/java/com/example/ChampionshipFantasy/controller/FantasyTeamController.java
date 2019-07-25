@@ -4,7 +4,6 @@ import com.example.ChampionshipFantasy.dto.FantasyTeamDto;
 import com.example.ChampionshipFantasy.model.FantasyTeam;
 import com.example.ChampionshipFantasy.model.SelectionActive;
 import com.example.ChampionshipFantasy.repository.FantasyTeamRepository;
-import com.example.ChampionshipFantasy.repository.SelectionRepository;
 import com.example.ChampionshipFantasy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,7 +17,6 @@ public class FantasyTeamController {
 
     private FantasyTeamRepository fantasyTeamRepository;
     private UserRepository userRepository;
-    private FantasyTeamRepository fantasyTeamRepository1;
 
     @Autowired
     public FantasyTeamController(FantasyTeamRepository fantasyTeamRepository, UserRepository userRepository) {
@@ -33,15 +31,12 @@ public class FantasyTeamController {
 
     @GetMapping("/{id}")
     public FantasyTeam FindOne(@PathVariable("id") Long id) {
-        FantasyTeam fantasyTeam = fantasyTeamRepository.findById(id).orElse(null);
-        fantasyTeamRepository.save(fantasyTeam);
-        return fantasyTeam;
+        return fantasyTeamRepository.findById(id).orElse(null);
     }
 
     @GetMapping("/{id}/selections")
     public List<SelectionActive> GetSelections(@PathVariable("id") Long id) {
-        FantasyTeam fantasyTeam = fantasyTeamRepository.findById(id).orElse(null);
-        return fantasyTeam.getSelections();
+        return fantasyTeamRepository.findById(id).orElse(null).getSelections();
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

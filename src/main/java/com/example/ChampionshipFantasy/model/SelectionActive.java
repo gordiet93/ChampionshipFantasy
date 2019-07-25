@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 @Entity
 @EntityListeners(SelectionActiveListener.class)
+@PrimaryKeyJoinColumn(name = "id")
 public class SelectionActive extends Selection {
 
     @JsonIdentityReference(alwaysAsId = true)

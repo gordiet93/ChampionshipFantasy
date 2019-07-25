@@ -1,11 +1,11 @@
 package com.example.ChampionshipFantasy.model;
 
-import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
 
 public class FantasyTeamGameweekListener {
 
-    @PostLoad
-    public void postLoad(FantasyTeamGameweek fantasyTeamGameweek) {
+    @PrePersist
+    public void prePersist(FantasyTeamGameweek fantasyTeamGameweek) {
         fantasyTeamGameweek.setPoints(calculatePoints(fantasyTeamGameweek));
     }
 
@@ -15,6 +15,7 @@ public class FantasyTeamGameweekListener {
         for (Selection selection : fantasyTeamGameweek.getSelections()) {
             total += selection.getPoints();
         }
+
 
         return total;
     }
