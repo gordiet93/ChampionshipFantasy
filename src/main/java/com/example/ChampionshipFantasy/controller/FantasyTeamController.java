@@ -1,14 +1,17 @@
 package com.example.ChampionshipFantasy.controller;
 
 import com.example.ChampionshipFantasy.dto.FantasyTeamDto;
+import com.example.ChampionshipFantasy.dto.SelectionDto;
 import com.example.ChampionshipFantasy.model.FantasyTeam;
 import com.example.ChampionshipFantasy.model.SelectionActive;
 import com.example.ChampionshipFantasy.repository.FantasyTeamRepository;
+import com.example.ChampionshipFantasy.repository.PlayerRepository;
 import com.example.ChampionshipFantasy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,11 +20,14 @@ public class FantasyTeamController {
 
     private FantasyTeamRepository fantasyTeamRepository;
     private UserRepository userRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
-    public FantasyTeamController(FantasyTeamRepository fantasyTeamRepository, UserRepository userRepository) {
+    public FantasyTeamController(FantasyTeamRepository fantasyTeamRepository, UserRepository userRepository,
+                                 PlayerRepository playerRepository) {
         this.fantasyTeamRepository = fantasyTeamRepository;
         this.userRepository = userRepository;
+        this.playerRepository = playerRepository;
     }
 
     @GetMapping
@@ -45,6 +51,16 @@ public class FantasyTeamController {
     }
 
     private FantasyTeam dtoToModel(FantasyTeamDto fantasyTeamDto) {
-        return new FantasyTeam(fantasyTeamDto.getName(), userRepository.getOne(fantasyTeamDto.getUserId()));
+        List<SelectionActive> selectionActives = new ArrayList<>();
+
+        for (SelectionDto selectionDto : fantasyTeamDto.getSelections()) {
+            SelectionActive selectionActive = new SelectionActive(
+                    playerRepository.getOne(selectionDto.getPlayerId()), selectionDto.isCaptained());
+
+            selectionActives.add(selectionActive);
+        }
+
+        return new FantasyTeam(fantasyTeamDto.getName(),
+                userRepository.getOne(fantasyTeamDto.getUserId()), selectionActives);
     }
 }

@@ -40,9 +40,10 @@ public class FantasyTeam extends AuditModel {
     public FantasyTeam() {
     }
 
-    public FantasyTeam(String name, User user) {
+    public FantasyTeam(String name, User user, List<SelectionActive> selections) {
         this.name = name;
         this.user = user;
+        this.selections = selections;
     }
 
     public Long getId() {

@@ -1,9 +1,14 @@
 package com.example.ChampionshipFantasy.dto;
 
+import com.example.ChampionshipFantasy.model.Selection;
+
+import java.util.List;
+
 public class FantasyTeamDto {
 
     private String name;
     private Long userId;
+    private List<SelectionDto> selections;
 
     public FantasyTeamDto() {
     }
@@ -27,5 +32,13 @@ public class FantasyTeamDto {
 
     public void setUserId(Long userID) {
         this.userId = userID;
+    }
+
+    public List<SelectionDto> getSelections() {
+        return selections;
+    }
+
+    public void setSelections(List<SelectionDto> selections) {
+        this.selections = selections;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ChampionshipFantasy.model;
 
+import com.example.ChampionshipFantasy.model.player.Player;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,6 +18,11 @@ public class SelectionActive extends Selection {
     @ManyToOne
     @JsonProperty(value = "fantasyTeam_Id")
     private FantasyTeam fantasyTeam;
+
+    public SelectionActive(Player player, Boolean captained) {
+        this.setPlayer(player);
+        this.setCaptained(captained);
+    }
 
     public FantasyTeam getFantasyTeam() {
         return fantasyTeam;
