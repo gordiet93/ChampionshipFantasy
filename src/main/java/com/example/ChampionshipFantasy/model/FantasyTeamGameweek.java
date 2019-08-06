@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@EntityListeners(FantasyTeamGameweekListener.class)
 @Entity
 public class FantasyTeamGameweek {
 

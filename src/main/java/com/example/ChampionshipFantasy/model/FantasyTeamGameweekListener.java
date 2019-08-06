@@ -12,10 +12,9 @@ public class FantasyTeamGameweekListener {
     private int calculatePoints(FantasyTeamGameweek fantasyTeamGameweek) {
         int total = 0;
 
-        for (Selection selection : fantasyTeamGameweek.getSelections()) {
+        for (SelectionInactive selection : fantasyTeamGameweek.getSelections()) {
             total += selection.getPoints();
         }
-
 
         return total;
     }

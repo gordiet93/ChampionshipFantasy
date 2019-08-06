@@ -1,11 +1,9 @@
 package com.example.ChampionshipFantasy.model.player;
 
 import com.example.ChampionshipFantasy.model.*;
-import com.example.ChampionshipFantasy.model.Event;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Map;
 
 @Entity

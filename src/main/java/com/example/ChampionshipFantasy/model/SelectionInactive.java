@@ -16,6 +16,8 @@ public class SelectionInactive extends Selection {
     @JsonProperty(value = "fantasyTeamGameweek_Id")
     private FantasyTeamGameweek fantasyTeamGameweek;
 
+    public SelectionInactive() {}
+
     public FantasyTeamGameweek getFantasyTeamGameweek() {
         return fantasyTeamGameweek;
     }
