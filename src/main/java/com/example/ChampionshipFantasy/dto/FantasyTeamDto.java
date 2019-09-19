@@ -1,7 +1,5 @@
 package com.example.ChampionshipFantasy.dto;
 
-import com.example.ChampionshipFantasy.model.Selection;
-
 import java.util.List;
 
 public class FantasyTeamDto {

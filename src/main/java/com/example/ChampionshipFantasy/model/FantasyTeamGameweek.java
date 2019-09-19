@@ -26,13 +26,17 @@ public class FantasyTeamGameweek {
     @OneToMany(mappedBy = "fantasyTeamGameweek", cascade = CascadeType.ALL)
     private List<SelectionInactive> selections;
 
+    private Boolean tripleCaptain;
+
     public FantasyTeamGameweek() {}
 
-    public FantasyTeamGameweek(Integer points, FantasyTeam fantasyTeam, Gameweek gameweek, List<SelectionInactive> selections) {
+    public FantasyTeamGameweek(Integer points, FantasyTeam fantasyTeam, Gameweek gameweek,
+                               List<SelectionInactive> selections, Boolean tripleCaptain) {
         this.points = points;
         this.fantasyTeam = fantasyTeam;
         this.gameweek = gameweek;
         this.selections = selections;
+        this.tripleCaptain = tripleCaptain;
     }
 
     public Long getId() {
