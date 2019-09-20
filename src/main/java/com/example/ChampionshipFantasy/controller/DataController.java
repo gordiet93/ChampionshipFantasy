@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,15 +29,20 @@ public class DataController {
     private PlayerRepository playerRepository;
     private FixtureRepository fixtureRepository;
     private PlayerGameweekRepository playerGameweekRepository;
+    private FantasyTeamRepository fantasyTeamRepository;
+    private FantasyTeamGameweekRepository fantasyTeamGameweekRepository;
 
     @Autowired
     public DataController(TeamRepository teamRepository, GameweekRepository gameweekRepository, PlayerRepository playerRepository,
-                          FixtureRepository fixtureRepository, PlayerGameweekRepository playerGameweekRepository) {
+                          FixtureRepository fixtureRepository, PlayerGameweekRepository playerGameweekRepository,
+                          FantasyTeamRepository fantasyTeamRepository, FantasyTeamGameweekRepository fantasyTeamGameweekRepository) {
         this.teamRepository = teamRepository;
         this.gameweekRepository = gameweekRepository;
         this.playerRepository = playerRepository;
         this.fixtureRepository = fixtureRepository;
         this.playerGameweekRepository = playerGameweekRepository;
+        this.fantasyTeamRepository = fantasyTeamRepository;
+        this.fantasyTeamGameweekRepository = fantasyTeamGameweekRepository;
     }
 
     @PostMapping("/loadteamsandplayers")
@@ -57,6 +63,29 @@ public class DataController {
     @PostMapping("/loadfixtures")
     public void fix() {
         loadFixtures();
+    }
+
+    //Look into creating one directional relationship between fntteamgmw and selections
+    //create a getgameweek method to get the current gameweek, instead of using fantasyteam or selection objects
+    @PostMapping("/updatefantasyteams")
+    public void updateFantasyTeams() {
+        List<FantasyTeam> fantasyTeams = fantasyTeamRepository.findAll();
+
+        for (FantasyTeam fantasyTeam : fantasyTeams) {
+            FantasyTeamGameweek fantasyTeamGameweek = new FantasyTeamGameweek(fantasyTeam,
+                    fantasyTeam.getSelections().iterator().next().getGameweek(), false);
+
+            List<SelectionInactive> selectionInactives = new ArrayList<>();
+
+            for (SelectionActive selectionActive : fantasyTeam.getSelections()) {
+                SelectionInactive selectionInactive = new SelectionInactive(selectionActive.getPoints(), fantasyTeamGameweek,
+                        fantasyTeamGameweek.getGameweek(), selectionActive.getPlayer(), selectionActive.isCaptained());
+                selectionInactives.add(selectionInactive);
+            }
+
+            fantasyTeamGameweek.setSelections(selectionInactives);
+            fantasyTeamGameweekRepository.save(fantasyTeamGameweek);
+        }
     }
 
     //refactor

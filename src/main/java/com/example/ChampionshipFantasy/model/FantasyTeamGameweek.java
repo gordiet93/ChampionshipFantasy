@@ -1,6 +1,8 @@
 package com.example.ChampionshipFantasy.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
@@ -18,9 +20,12 @@ public class FantasyTeamGameweek {
     private Integer points;
 
     @ManyToOne
+    @JsonProperty(value = "fantasyTeam_id")
     private FantasyTeam fantasyTeam;
 
     @ManyToOne
+    @JsonProperty(value = "gameweek_id")
+    @JsonIdentityReference(alwaysAsId = true)
     private Gameweek gameweek;
 
     @OneToMany(mappedBy = "fantasyTeamGameweek", cascade = CascadeType.ALL)
@@ -30,12 +35,9 @@ public class FantasyTeamGameweek {
 
     public FantasyTeamGameweek() {}
 
-    public FantasyTeamGameweek(Integer points, FantasyTeam fantasyTeam, Gameweek gameweek,
-                               List<SelectionInactive> selections, Boolean tripleCaptain) {
-        this.points = points;
+    public FantasyTeamGameweek(FantasyTeam fantasyTeam, Gameweek gameweek, Boolean tripleCaptain) {
         this.fantasyTeam = fantasyTeam;
         this.gameweek = gameweek;
-        this.selections = selections;
         this.tripleCaptain = tripleCaptain;
     }
 

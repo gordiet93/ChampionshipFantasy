@@ -1,8 +1,7 @@
 package com.example.ChampionshipFantasy.model;
 
 import com.example.ChampionshipFantasy.model.player.Player;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -11,10 +10,11 @@ import javax.persistence.*;
 @PrimaryKeyJoinColumn(name = "id")
 public class SelectionActive extends Selection {
 
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
-    @JsonProperty(value = "fantasyTeam_Id")
+    @JsonIgnore
     private FantasyTeam fantasyTeam;
+
+    public SelectionActive() {}
 
     public SelectionActive(Player player, Boolean captained) {
         this.setPlayer(player);

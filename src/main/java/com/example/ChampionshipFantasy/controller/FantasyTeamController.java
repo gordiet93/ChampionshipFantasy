@@ -45,22 +45,40 @@ public class FantasyTeamController {
         return fantasyTeamRepository.findById(id).orElse(null).getSelections();
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void save(@RequestBody FantasyTeamDto fantasyTeamDto) {
-        fantasyTeamRepository.save(dtoToModel(fantasyTeamDto));
+    //Eventually validate so the size of the selections is 11 to start, then 15.
+    @PutMapping("/{id}/selections")
+    public void updateSelections(@PathVariable("id") Long id, @RequestBody List<SelectionDto> selectionDtos) {
+        FantasyTeam fantasyTeam = fantasyTeamRepository.getOne(id);
+        List<SelectionActive> selectionActives = fantasyTeam.getSelections();
+
+        for (int i = 0; i < selectionActives.size(); i++) {
+            selectionActives.get(i).setPlayer(playerRepository.getOne(selectionDtos.get(i).getPlayerId()));
+        }
+
+        fantasyTeamRepository.save(fantasyTeam);
     }
 
-    private FantasyTeam dtoToModel(FantasyTeamDto fantasyTeamDto) {
-        List<SelectionActive> selectionActives = new ArrayList<>();
+    //Eventually validate so the size of the selections is 11 to start, then 15.
+    @PostMapping("/{id}/selections")
+    public void addSelections(@PathVariable("id") Long id, @RequestBody List<SelectionDto> selectionDtos) {
+        FantasyTeam fantasyTeam = fantasyTeamRepository.getOne(id);
+        List<SelectionActive> selectionActives = fantasyTeam.getSelections();
 
-        for (SelectionDto selectionDto : fantasyTeamDto.getSelections()) {
+        for (SelectionDto selectionDto : selectionDtos) {
             SelectionActive selectionActive = new SelectionActive(
                     playerRepository.getOne(selectionDto.getPlayerId()), selectionDto.isCaptained());
+            selectionActive.setFantasyTeam(fantasyTeam);
 
             selectionActives.add(selectionActive);
         }
 
-        return new FantasyTeam(fantasyTeamDto.getName(),
-                userRepository.getOne(fantasyTeamDto.getUserId()), selectionActives);
+        fantasyTeam.setSelections(selectionActives);
+        fantasyTeamRepository.save(fantasyTeam);
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void save(@RequestBody FantasyTeamDto fantasyTeamDto) {
+        fantasyTeamRepository.save(new FantasyTeam(fantasyTeamDto.getName(),
+                userRepository.getOne(fantasyTeamDto.getUserId())));
     }
 }

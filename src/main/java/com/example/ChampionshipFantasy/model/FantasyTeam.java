@@ -2,6 +2,7 @@ package com.example.ChampionshipFantasy.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.Formula;
 
@@ -21,6 +22,7 @@ public class FantasyTeam extends AuditModel {
     @Formula("(SELECT SUM(f.points) FROM fantasy_team_gameweek f WHERE f.fantasy_team_id = id)")
     private Integer totalPoints;
 
+    @JsonProperty(value = "user_id")
     @JsonIdentityReference(alwaysAsId = true)
     @OneToOne
     private User user;
@@ -40,10 +42,9 @@ public class FantasyTeam extends AuditModel {
     public FantasyTeam() {
     }
 
-    public FantasyTeam(String name, User user, List<SelectionActive> selections) {
+    public FantasyTeam(String name, User user) {
         this.name = name;
         this.user = user;
-        this.selections = selections;
     }
 
     public Long getId() {
@@ -84,5 +85,13 @@ public class FantasyTeam extends AuditModel {
 
     public void setSelections(List<SelectionActive> selections) {
         this.selections = selections;
+    }
+
+    public List<FantasyTeamGameweek> getFantasyTeamGameweeks() {
+        return fantasyTeamGameweeks;
+    }
+
+    public void setFantasyTeamGameweeks(List<FantasyTeamGameweek> fantasyTeamGameweeks) {
+        this.fantasyTeamGameweeks = fantasyTeamGameweeks;
     }
 }

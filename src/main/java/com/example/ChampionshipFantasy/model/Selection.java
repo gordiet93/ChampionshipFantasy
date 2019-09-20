@@ -1,16 +1,12 @@
 package com.example.ChampionshipFantasy.model;
 
 import com.example.ChampionshipFantasy.model.player.*;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "status")
+        use = JsonTypeInfo.Id.NAME, property = "status", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = false)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SelectionInactive.class, name = "inactive"),
         @JsonSubTypes.Type(value = SelectionActive.class, name = "active")
@@ -26,12 +22,13 @@ public abstract class Selection extends AuditModel {
 
     private Integer points;
 
-    @Transient
+    @ManyToOne
+    @JsonIgnore
     private Gameweek gameweek;
 
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
-    @JsonProperty(value = "player_Id")
+    @JsonProperty(value = "player_id")
     private Player player;
     private boolean captained;
 

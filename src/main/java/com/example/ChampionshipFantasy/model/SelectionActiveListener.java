@@ -9,6 +9,7 @@ public class SelectionActiveListener {
 
     private static final int CAPTAIN_MULTI = 2;
 
+    //todo : Only calculate points when a game is live
     @PostLoad
     public void postLoad(SelectionActive selectionActive) {
         selectionActive.setPoints(calculatePoints(selectionActive));
