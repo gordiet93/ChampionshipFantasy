@@ -4,6 +4,7 @@ import com.example.ChampionshipFantasy.deserializer.EventDeserializer;
 import com.example.ChampionshipFantasy.model.*;
 import com.example.ChampionshipFantasy.model.player.Player;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hibernate.annotations.NotFound;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @JsonDeserialize(using = EventDeserializer.class)
 public class Event extends AuditModel {

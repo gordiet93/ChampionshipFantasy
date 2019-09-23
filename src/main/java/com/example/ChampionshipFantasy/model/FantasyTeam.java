@@ -35,7 +35,6 @@ public class FantasyTeam extends AuditModel {
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "fantasyTeam")
     private List<FantasyTeamGameweek> fantasyTeamGameweeks;
 
-    @NotNull
     @OneToMany(mappedBy = "fantasyTeam", cascade = CascadeType.ALL)
     private List<SelectionActive> selections;
 

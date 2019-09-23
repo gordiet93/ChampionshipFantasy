@@ -110,7 +110,7 @@ public class DataController {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode node = mapper.readTree(new File("src/main/resources/gameweeks.json"));
-            List<Gameweek> gameweekList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Gameweek[].class));
+            List<Gameweek> gameweekList = Arrays.asList(mapper.readValue(node.get("data").get("rounds").get("data").traverse(), Gameweek[].class));
 
             for (Gameweek gameweek : gameweekList) {
                 gameweekRepository.save(gameweek);
@@ -120,30 +120,33 @@ public class DataController {
         }
     }
 
+    //make urls constants
     private void loadlive() {
         ObjectMapper mapper = new ObjectMapper();
         try {
+            //String s = callURL("https://soccer.sportmonks.com/api/v2.0/livescores?leagues=501&include=lineup&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J");
             JsonNode base = mapper.readTree(new File("src/main/resources/HeartsHibsLive.json"));
-            JsonNode lineup = base.get("data").findValue("lineup").findValue("data");
+            List<Fixture> fixtures = Arrays.asList(mapper.readValue(base.get("data").traverse(), Fixture[].class));
 
-            Fixture fixture = mapper.readValue(base.get("data").traverse(), Fixture.class);
-            fixtureRepository.save(fixture);
+            for (Fixture fixture : fixtures) {
+                fixtureRepository.save(fixture);
+                Gameweek gameweek = fixture.getGameweek();
 
-            Gameweek gameweek = fixture.getGameweek();
+                if (fixture.getLineUps() != null) {
+                    for (LineUp lineup : fixture.getLineUps()) {
+                        Player player = playerRepository.findById(lineup.getPlayerId()).orElse(null);
 
-            for (JsonNode jsonNode : lineup) {
-                Player player = playerRepository.findById(jsonNode.findValue("player_id").asLong()).orElse(null);
+                        if (player != null) {
+                            player.setName(lineup.getPlayerName());
+                            playerRepository.save(player);
 
-                if (player != null) {
-                    player.setName(jsonNode.findValue("player_name").textValue());
-                    playerRepository.save(player);
+                            PlayerGameweek playerGameweek = player.getPlayerGameweekMap().get(gameweek);
+                            if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
 
-                    PlayerGameweek playerGameweek = player.getPlayerGameweekMap().get(gameweek);
-                    if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
-
-                    playerGameweek.setMinutesPlayed(jsonNode.get("stats").get("other").findValue("minutes_played").asInt());
-                    playerGameweekRepository.save(playerGameweek);
-
+                            playerGameweek.setMinutesPlayed(fixture.getMintuesPlayed());
+                            playerGameweekRepository.save(playerGameweek);
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
@@ -169,7 +172,7 @@ public class DataController {
         String contentString;
         URL url = new URL(url1);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestProperty("X-Auth-Token", "bc2a33c0a22244ce83c272a2e9562655");
+        //con.setRequestProperty("X-Auth-Token", "bc2a33c0a22244ce83c272a2e9562655");
         con.setRequestMethod("GET");
 
         BufferedReader in = new BufferedReader(

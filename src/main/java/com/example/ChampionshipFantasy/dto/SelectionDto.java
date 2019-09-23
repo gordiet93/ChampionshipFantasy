@@ -3,6 +3,7 @@ package com.example.ChampionshipFantasy.dto;
 public class SelectionDto {
 
     private Long playerId;
+    private Long gameweekId;
     private boolean captained;
 
     public SelectionDto() {
@@ -22,5 +23,13 @@ public class SelectionDto {
 
     public void setCaptained(boolean captained) {
         this.captained = captained;
+    }
+
+    public Long getGameweekId() {
+        return gameweekId;
+    }
+
+    public void setGameweekId(Long gameweekId) {
+        this.gameweekId = gameweekId;
     }
 }

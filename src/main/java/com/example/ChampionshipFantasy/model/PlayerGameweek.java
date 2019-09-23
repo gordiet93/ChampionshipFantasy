@@ -25,10 +25,10 @@ public class PlayerGameweek extends AuditModel {
     @JsonProperty("gameweek_id")
     private Gameweek gameweek;
 
-    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 3)")
+    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 4)")
     private Integer goalsScored;
 
-    @Formula("(SELECT count(*) FROM event e WHERE e.related_player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 3)")
+    @Formula("(SELECT count(*) FROM event e WHERE e.related_player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 4)")
     private Integer assists;
 
     private Integer minutesPlayed;

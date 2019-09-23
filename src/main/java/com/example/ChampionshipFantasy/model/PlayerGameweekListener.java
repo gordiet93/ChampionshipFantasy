@@ -7,9 +7,13 @@ import javax.persistence.PrePersist;
 
 public class PlayerGameweekListener {
 
-    @PostLoad
     @PrePersist
     public void prePersist(PlayerGameweek pG) {
+        pG.setPoints(calculatePoints(pG));
+    }
+
+    @PostLoad
+    public void postLoad(PlayerGameweek pG) {
         pG.setPoints(calculatePoints(pG));
     }
 

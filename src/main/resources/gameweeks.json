@@ -1,1 +1,338 @@
-{"data":[{"id":147745,"name":1,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-08-04","end":"2018-08-05"},{"id":147746,"name":2,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-08-11","end":"2018-08-12"},{"id":147747,"name":3,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-08-25","end":"2018-08-26"},{"id":147748,"name":4,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-09-01","end":"2018-09-02"},{"id":147749,"name":5,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-09-14","end":"2018-09-15"},{"id":147750,"name":6,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-09-22","end":"2018-09-23"},{"id":147751,"name":7,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-09-29","end":"2018-09-30"},{"id":147752,"name":8,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-10-06","end":"2018-10-07"},{"id":147753,"name":9,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-10-20","end":"2018-10-21"},{"id":147754,"name":10,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-10-23","end":"2018-12-19"},{"id":147755,"name":11,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-10-31","end":"2018-10-31"},{"id":147756,"name":12,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-11-03","end":"2018-11-04"},{"id":147757,"name":13,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-11-09","end":"2018-11-11"},{"id":147758,"name":14,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-11-24","end":"2018-11-24"},{"id":147759,"name":15,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-12-01","end":"2019-01-30"},{"id":147760,"name":16,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-12-05","end":"2018-12-05"},{"id":147761,"name":17,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-12-08","end":"2018-12-09"},{"id":147762,"name":18,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-12-14","end":"2018-12-16"},{"id":147763,"name":19,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-12-22","end":"2018-12-23"},{"id":147764,"name":20,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-12-26","end":"2018-12-26"},{"id":147765,"name":21,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2018-12-29","end":"2018-12-29"},{"id":147766,"name":22,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-01-23","end":"2019-01-23"},{"id":147767,"name":23,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-01-26","end":"2019-01-27"},{"id":147768,"name":24,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-02-01","end":"2019-02-03"},{"id":147769,"name":25,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-02-06","end":"2019-02-06"},{"id":147770,"name":26,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-02-16","end":"2019-02-17"},{"id":147771,"name":27,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-02-22","end":"2019-02-24"},{"id":147772,"name":28,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-02-27","end":"2019-03-02"},{"id":147773,"name":29,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-03-08","end":"2019-03-11"},{"id":147774,"name":30,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-03-16","end":"2019-03-17"},{"id":147775,"name":31,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-03-29","end":"2019-03-31"},{"id":147776,"name":32,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-04-03","end":"2019-04-03"},{"id":147777,"name":33,"league_id":501,"season_id":12963,"stage_id":7508262,"start":"2019-04-06","end":"2019-04-07"}],"meta":{"subscription":{"started_at":{"date":"2017-03-20 21:02:56.000000","timezone_type":3,"timezone":"UTC"},"trial_ends_at":null,"ends_at":null},"plan":{"name":"Free Plan","price":"0.00","request_limit":"3,1"},"sports":[{"id":1,"name":"Soccer","current":true},{"id":6,"name":"Cricket","current":false}]}}
+{"data": {
+    "id": 16222,
+    "name": "2019/2020",
+    "league_id": 501,
+    "is_current_season": true,
+    "current_round_id": 173646,
+    "current_stage_id": 77444704,
+    "rounds": {
+      "data": [
+        {
+          "id": 173641,
+          "name": 1,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-08-03",
+          "end": "2019-08-04"
+        },
+        {
+          "id": 173642,
+          "name": 2,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-08-10",
+          "end": "2019-08-11"
+        },
+        {
+          "id": 173643,
+          "name": 3,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-08-24",
+          "end": "2019-08-25"
+        },
+        {
+          "id": 173644,
+          "name": 4,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-08-31",
+          "end": "2019-09-01"
+        },
+        {
+          "id": 173645,
+          "name": 5,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-09-14",
+          "end": "2019-09-14"
+        },
+        {
+          "id": 173646,
+          "name": 6,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-09-21",
+          "end": "2019-09-22"
+        },
+        {
+          "id": 173647,
+          "name": 7,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-09-28",
+          "end": "2019-09-28"
+        },
+        {
+          "id": 173648,
+          "name": 8,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-10-05",
+          "end": "2019-10-06"
+        },
+        {
+          "id": 173649,
+          "name": 9,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-10-19",
+          "end": "2019-10-20"
+        },
+        {
+          "id": 173650,
+          "name": 10,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-10-26",
+          "end": "2019-10-27"
+        },
+        {
+          "id": 173651,
+          "name": 11,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-10-30",
+          "end": "2019-10-30"
+        },
+        {
+          "id": 173652,
+          "name": 12,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-11-02",
+          "end": "2019-11-02"
+        },
+        {
+          "id": 173653,
+          "name": 13,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-11-09",
+          "end": "2019-11-10"
+        },
+        {
+          "id": 173654,
+          "name": 14,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-11-23",
+          "end": "2019-11-23"
+        },
+        {
+          "id": 173655,
+          "name": 15,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-11-30",
+          "end": "2019-12-01"
+        },
+        {
+          "id": 173656,
+          "name": 16,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-12-04",
+          "end": "2019-12-04"
+        },
+        {
+          "id": 173657,
+          "name": 17,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-12-07",
+          "end": "2019-12-07"
+        },
+        {
+          "id": 173658,
+          "name": 18,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-12-14",
+          "end": "2019-12-15"
+        },
+        {
+          "id": 173659,
+          "name": 19,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-12-21",
+          "end": "2019-12-21"
+        },
+        {
+          "id": 173660,
+          "name": 20,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-12-26",
+          "end": "2019-12-26"
+        },
+        {
+          "id": 173661,
+          "name": 21,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2019-12-29",
+          "end": "2019-12-29"
+        },
+        {
+          "id": 173662,
+          "name": 22,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-01-22",
+          "end": "2020-01-22"
+        },
+        {
+          "id": 173663,
+          "name": 23,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-01-25",
+          "end": "2020-01-25"
+        },
+        {
+          "id": 173664,
+          "name": 24,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-02-01",
+          "end": "2020-02-01"
+        },
+        {
+          "id": 173665,
+          "name": 25,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-02-05",
+          "end": "2020-02-05"
+        },
+        {
+          "id": 173666,
+          "name": 26,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-02-12",
+          "end": "2020-02-12"
+        },
+        {
+          "id": 173667,
+          "name": 27,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-02-15",
+          "end": "2020-02-15"
+        },
+        {
+          "id": 173668,
+          "name": 28,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-02-22",
+          "end": "2020-02-22"
+        },
+        {
+          "id": 173669,
+          "name": 29,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-03-04",
+          "end": "2020-03-04"
+        },
+        {
+          "id": 173670,
+          "name": 30,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-03-07",
+          "end": "2020-03-07"
+        },
+        {
+          "id": 173671,
+          "name": 31,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-03-14",
+          "end": "2020-03-14"
+        },
+        {
+          "id": 173672,
+          "name": 32,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-03-21",
+          "end": "2020-03-21"
+        },
+        {
+          "id": 173673,
+          "name": 33,
+          "league_id": 501,
+          "season_id": 16222,
+          "stage_id": 77444704,
+          "start": "2020-04-04",
+          "end": "2020-04-04"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "subscription": {
+      "started_at": {
+        "date": "2017-03-20 21:02:56.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "trial_ends_at": null,
+      "ends_at": null
+    },
+    "plan": {
+      "name": "Free Plan",
+      "price": "0.00",
+      "request_limit": "3,1"
+    },
+    "sports": [
+      {
+        "id": 1,
+        "name": "Soccer",
+        "current": true
+      },
+      {
+        "id": 6,
+        "name": "Cricket",
+        "current": false
+      }
+    ]
+  }
+}

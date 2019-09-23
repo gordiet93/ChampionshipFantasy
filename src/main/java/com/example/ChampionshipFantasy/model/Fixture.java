@@ -29,14 +29,21 @@ public class Fixture {
 
     private FixtureStatus status;
 
+    @Transient
+    private List<LineUp> lineUps;
+
+    @Transient
+    private Integer mintuesPlayed;
+
     public Fixture() {}
 
-    public Fixture(Long id, Gameweek gameweek, Team homeTeam, Team awayTeam, FixtureStatus status) {
+    public Fixture(Long id, Gameweek gameweek, Team homeTeam, Team awayTeam, FixtureStatus status, int mintuesPlayed) {
         this.id = id;
         this.gameweek = gameweek;
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.status = status;
+        this.mintuesPlayed = mintuesPlayed;
     }
 
     public Long getId() {
@@ -89,6 +96,13 @@ public class Fixture {
 //        this.gameweek = new Gameweek(id);
 //    }
 
+    public List<LineUp> getLineUps() {
+        return lineUps;
+    }
+
+    public void setLineUps(List<LineUp> lineUps) {
+        this.lineUps = lineUps;
+    }
 
     public List<Event> getEvents() {
         return events;
@@ -96,5 +110,13 @@ public class Fixture {
 
     public void setEvents(List<Event> events) {
         this.events = events;
+    }
+
+    public Integer getMintuesPlayed() {
+        return mintuesPlayed;
+    }
+
+    public void setMintuesPlayed(Integer mintuesPlayed) {
+        this.mintuesPlayed = mintuesPlayed;
     }
 }

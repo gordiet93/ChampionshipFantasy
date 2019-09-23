@@ -1,8 +1,6 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -17,6 +15,14 @@ public class Gameweek implements Serializable {
     @Id
     private Long id;
 
+    @JsonProperty(value = "start")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date startDate;
+
+    @JsonProperty(value = "end")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date endDate;
+
     public Gameweek() {}
 
     public Gameweek(Long id) {
@@ -29,5 +35,21 @@ public class Gameweek implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
