@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.PostLoad;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -65,26 +66,36 @@ public class DataController {
         loadFixtures();
     }
 
+    //should be done automatcially, not activited from rest
     //Look into creating one directional relationship between fntteamgmw and selections
     //create a getgameweek method to get the current gameweek, instead of using fantasyteam or selection objects
-    @PostMapping("/updatefantasyteams")
-    public void updateFantasyTeams() {
+    @PostMapping("/startGameweek")
+    public void startGamweek() {
         List<FantasyTeam> fantasyTeams = fantasyTeamRepository.findAll();
+        //Gameweek nextGameweek = gameweekRepository.findFirstByStartDateAfter(new Date(System.currentTimeMillis()));
+        Long gameweekNum = 173644L;
+        Gameweek gameweek = gameweekRepository.getOne(gameweekNum);
 
         for (FantasyTeam fantasyTeam : fantasyTeams) {
-            FantasyTeamGameweek fantasyTeamGameweek = new FantasyTeamGameweek(fantasyTeam,
-                    fantasyTeam.getSelections().iterator().next().getGameweek(), false);
+            FantasyTeamGameweekLive fantasyTeamGameweekLive = new FantasyTeamGameweekLive(fantasyTeam, gameweek,
+                    false, fantasyTeam.getSelections());
+            fantasyTeamGameweekRepository.save(fantasyTeamGameweekLive);
+        }
+    }
 
-            List<SelectionInactive> selectionInactives = new ArrayList<>();
+    @PostMapping("/endGameweek")
+    public void endGameweekAndPrepareNext() {
+        List<FantasyTeamGameweekLive> fantasyTeamGameweekLives = fantasyTeamGameweekRepository.findAllWithLiveStatus();
+        List<Player> players = playerRepository.findAll();
+        Gameweek nextGamweek = gameweekRepository.findFirstByStartDateAfter(new Date(System.currentTimeMillis()));
 
-            for (SelectionActive selectionActive : fantasyTeam.getSelections()) {
-                SelectionInactive selectionInactive = new SelectionInactive(selectionActive.getPoints(), fantasyTeamGameweek,
-                        fantasyTeamGameweek.getGameweek(), selectionActive.getPlayer(), selectionActive.isCaptained());
-                selectionInactives.add(selectionInactive);
-            }
+        for (Player player : players) {
+            playerGameweekRepository.save(new PlayerGameweek(player, nextGamweek));
+        }
 
-            fantasyTeamGameweek.setSelections(selectionInactives);
-            fantasyTeamGameweekRepository.save(fantasyTeamGameweek);
+        for (FantasyTeamGameweekLive fantasyTeamGameweekLive : fantasyTeamGameweekLives) {
+            FantasyTeamGameweek fantasyTeamGameweek = fantasyTeamGameweekLive;
+
         }
     }
 
@@ -140,7 +151,9 @@ public class DataController {
                             player.setName(lineup.getPlayerName());
                             playerRepository.save(player);
 
-                            PlayerGameweek playerGameweek = player.getPlayerGameweekMap().get(gameweek);
+                            PlayerGameweek playerGameweek = playerGameweekRepository.findByPlayerIdAndGameweekId(lineup.getPlayerId(),
+                                    fixture.getGameweek().getId());
+                            //should never need this if statement
                             if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
 
                             playerGameweek.setMinutesPlayed(fixture.getMintuesPlayed());

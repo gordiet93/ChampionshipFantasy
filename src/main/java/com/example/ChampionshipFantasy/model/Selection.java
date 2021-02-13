@@ -1,19 +1,12 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.model.player.*;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME, property = "status", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = false)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = SelectionInactive.class, name = "inactive"),
-        @JsonSubTypes.Type(value = SelectionActive.class, name = "active")
-})
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Selection extends AuditModel {
+public class Selection extends AuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -22,15 +15,19 @@ public abstract class Selection extends AuditModel {
 
     private Integer points;
 
-    @ManyToOne
-    @JsonIgnore
-    private Gameweek gameweek;
-
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
-    @JsonProperty(value = "player_id")
-    private Player player;
+    @JsonProperty(value = "player_gameweek_id")
+    private PlayerGameweek playerGameweek;
+
     private boolean captained;
+
+    public Selection() {}
+
+    public Selection(PlayerGameweek playerGameweek, boolean captained) {
+        this.playerGameweek = playerGameweek;
+        this.captained = captained;
+    }
 
     public Long getId() {
         return id;
@@ -48,12 +45,12 @@ public abstract class Selection extends AuditModel {
         this.points = points;
     }
 
-    public Player getPlayer() {
-        return player;
+    public PlayerGameweek getPlayerGameweek() {
+        return playerGameweek;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setPlayerGameweek(PlayerGameweek playerGameweek) {
+        this.playerGameweek = playerGameweek;
     }
 
     public boolean isCaptained() {
@@ -62,13 +59,5 @@ public abstract class Selection extends AuditModel {
 
     public void setCaptained(boolean captained) {
         this.captained = captained;
-    }
-
-    public Gameweek getGameweek() {
-        return gameweek;
-    }
-
-    public void setGameweek(Gameweek gameweek) {
-        this.gameweek = gameweek;
     }
 }

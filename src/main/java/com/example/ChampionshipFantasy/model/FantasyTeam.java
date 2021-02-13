@@ -35,8 +35,8 @@ public class FantasyTeam extends AuditModel {
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "fantasyTeam")
     private List<FantasyTeamGameweek> fantasyTeamGameweeks;
 
-    @OneToMany(mappedBy = "fantasyTeam", cascade = CascadeType.ALL)
-    private List<SelectionActive> selections;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Selection> selections;
 
     public FantasyTeam() {
     }
@@ -78,11 +78,11 @@ public class FantasyTeam extends AuditModel {
         this.user = user;
     }
 
-    public List<SelectionActive> getSelections() {
+    public List<Selection> getSelections() {
         return selections;
     }
 
-    public void setSelections(List<SelectionActive> selections) {
+    public void setSelections(List<Selection> selections) {
         this.selections = selections;
     }
 

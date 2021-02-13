@@ -4,7 +4,7 @@ import com.example.ChampionshipFantasy.model.*;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
-import java.util.Map;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -34,8 +34,7 @@ public abstract class Player extends AuditModel {
     private Integer Number;
 
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="player")
-    @MapKey(name = "gameweek")
-    private Map<Long, PlayerGameweek> playerGameweekMap;
+    private List<PlayerGameweek> playerGameweeks;
 
     @JsonProperty(value = "team_Id")
     @JsonIdentityReference(alwaysAsId = true)
@@ -64,16 +63,20 @@ public abstract class Player extends AuditModel {
         return ASSIST_POINTS;
     }
 
-    public Map<Long, PlayerGameweek> getPlayerGameweekMap() {
-        return playerGameweekMap;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<PlayerGameweek> getPlayerGameweeks() {
+        return playerGameweeks;
+    }
+
+    public void setPlayerGameweeks(List<PlayerGameweek> playerGameweeks) {
+        this.playerGameweeks = playerGameweeks;
     }
 
     public String getName() {

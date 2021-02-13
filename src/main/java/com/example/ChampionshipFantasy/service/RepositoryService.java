@@ -1,9 +1,11 @@
 package com.example.ChampionshipFantasy.service;
 
 import com.example.ChampionshipFantasy.model.Gameweek;
+import com.example.ChampionshipFantasy.model.PlayerGameweek;
 import com.example.ChampionshipFantasy.model.Team;
 import com.example.ChampionshipFantasy.model.player.Player;
 import com.example.ChampionshipFantasy.repository.GameweekRepository;
+import com.example.ChampionshipFantasy.repository.PlayerGameweekRepository;
 import com.example.ChampionshipFantasy.repository.PlayerRepository;
 import com.example.ChampionshipFantasy.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +19,15 @@ public class RepositoryService {
     private GameweekRepository gameweekRepository;
     private PlayerRepository playerRepository;
     private TeamRepository teamRepository;
+    private PlayerGameweekRepository playerGameweekRepository;
 
     @Autowired
     public RepositoryService(GameweekRepository gameweekRepository, PlayerRepository playerRepository,
-                             TeamRepository teamRepository) {
+                             TeamRepository teamRepository, PlayerGameweekRepository playerGameweekRepository) {
         this.gameweekRepository = gameweekRepository;
         this.playerRepository = playerRepository;
         this.teamRepository = teamRepository;
+        this.playerGameweekRepository = playerGameweekRepository;
         RepositoryService.instance = this;
     }
 
@@ -36,4 +40,8 @@ public class RepositoryService {
     }
 
     public Player getPlayerReference(Long id ) { return playerRepository.getOne(id); }
+
+    public PlayerGameweek getPlayerGameweekByPlayerIdAndGameweekId(Long playerId, Long gameweekId) {
+        return playerGameweekRepository.findByPlayerIdAndGameweekId(playerId, gameweekId);
+    }
 }

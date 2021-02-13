@@ -1,15 +1,14 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@EntityListeners(FantasyTeamGameweekListener.class)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "Status", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("Inactive")
 @Entity
 public class FantasyTeamGameweek {
 
@@ -28,17 +27,19 @@ public class FantasyTeamGameweek {
     @JsonIdentityReference(alwaysAsId = true)
     private Gameweek gameweek;
 
-    @OneToMany(mappedBy = "fantasyTeamGameweek", cascade = CascadeType.ALL)
-    private List<SelectionInactive> selections;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Selection> selections;
 
     private Boolean tripleCaptain;
 
     public FantasyTeamGameweek() {}
 
-    public FantasyTeamGameweek(FantasyTeam fantasyTeam, Gameweek gameweek, Boolean tripleCaptain) {
+    public FantasyTeamGameweek(FantasyTeam fantasyTeam, Gameweek gameweek, Boolean tripleCaptain,
+                               List<Selection> selections) {
         this.fantasyTeam = fantasyTeam;
         this.gameweek = gameweek;
         this.tripleCaptain = tripleCaptain;
+        this.selections = selections;
     }
 
     public Long getId() {
@@ -73,11 +74,19 @@ public class FantasyTeamGameweek {
         this.gameweek = gameweek;
     }
 
-    public List<SelectionInactive> getSelections() {
+    public List<Selection> getSelections() {
         return selections;
     }
 
-    public void setSelections(List<SelectionInactive> selections) {
+    public void setSelections(List<Selection> selections) {
         this.selections = selections;
+    }
+
+    public Boolean getTripleCaptain() {
+        return tripleCaptain;
+    }
+
+    public void setTripleCaptain(Boolean tripleCaptain) {
+        this.tripleCaptain = tripleCaptain;
     }
 }
