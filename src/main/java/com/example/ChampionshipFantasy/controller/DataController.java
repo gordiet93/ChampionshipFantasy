@@ -66,6 +66,7 @@ public class DataController {
         loadFixtures();
     }
 
+    /*
     //should be done automatcially, not activited from rest
     //Look into creating one directional relationship between fntteamgmw and selections
     //create a getgameweek method to get the current gameweek, instead of using fantasyteam or selection objects
@@ -97,7 +98,7 @@ public class DataController {
             FantasyTeamGameweek fantasyTeamGameweek = fantasyTeamGameweekLive;
 
         }
-    }
+    }*/
 
     //refactor
     private void loadData() {

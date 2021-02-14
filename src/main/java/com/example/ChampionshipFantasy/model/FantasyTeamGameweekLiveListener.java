@@ -2,7 +2,7 @@ package com.example.ChampionshipFantasy.model;
 
 import javax.persistence.PostLoad;
 
-public class FantasyTeamGameweekLiveListener {
+/*public class FantasyTeamGameweekLiveListener {
 
     private static final int CAPTAIN_MULTI = 2;
 
@@ -27,4 +27,4 @@ public class FantasyTeamGameweekLiveListener {
         }
         return total;
     }
-}
+}*/

@@ -1,8 +1,6 @@
 package com.example.ChampionshipFantasy.repository;
 
 import com.example.ChampionshipFantasy.model.FantasyTeamGameweek;
-import com.example.ChampionshipFantasy.model.FantasyTeamGameweekLive;
-import org.hibernate.sql.Select;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
