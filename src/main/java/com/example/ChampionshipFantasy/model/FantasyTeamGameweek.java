@@ -5,10 +5,6 @@ import com.fasterxml.jackson.annotation.*;
 import javax.persistence.*;
 import java.util.List;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "Status", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("Inactive")
 @Entity
 public class FantasyTeamGameweek {
 
@@ -19,6 +15,7 @@ public class FantasyTeamGameweek {
     private Integer points;
 
     @ManyToOne
+    @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty(value = "fantasyTeam_id")
     private FantasyTeam fantasyTeam;
 

@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -66,7 +67,7 @@ public class DataController {
         loadFixtures();
     }
 
-    /*
+
     //should be done automatcially, not activited from rest
     //Look into creating one directional relationship between fntteamgmw and selections
     //create a getgameweek method to get the current gameweek, instead of using fantasyteam or selection objects
@@ -78,13 +79,13 @@ public class DataController {
         Gameweek gameweek = gameweekRepository.getOne(gameweekNum);
 
         for (FantasyTeam fantasyTeam : fantasyTeams) {
-            FantasyTeamGameweekLive fantasyTeamGameweekLive = new FantasyTeamGameweekLive(fantasyTeam, gameweek,
+            FantasyTeamGameweek fantasyTeamGameweek = new FantasyTeamGameweek(fantasyTeam, gameweek,
                     false, fantasyTeam.getSelections());
-            fantasyTeamGameweekRepository.save(fantasyTeamGameweekLive);
+            fantasyTeamGameweekRepository.save(fantasyTeamGameweek);
         }
     }
 
-    @PostMapping("/endGameweek")
+    /*@PostMapping("/endGameweek")
     public void endGameweekAndPrepareNext() {
         List<FantasyTeamGameweekLive> fantasyTeamGameweekLives = fantasyTeamGameweekRepository.findAllWithLiveStatus();
         List<Player> players = playerRepository.findAll();
@@ -132,6 +133,20 @@ public class DataController {
         }
     }
 
+    private void loadFixtures() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode node = mapper.readTree(new File("src/main/resources/RangersUpcomingfixture.json"));
+            JsonNode nodeaye = node.get("data").findValue("upcoming").findValue("data");
+
+            List<Fixture> fixtures = Arrays.asList(mapper.readValue(nodeaye.traverse(), Fixture[].class));
+
+            fixtureRepository.saveAll(fixtures);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
     //make urls constants
     private void loadlive() {
         ObjectMapper mapper = new ObjectMapper();
@@ -163,20 +178,6 @@ public class DataController {
                     }
                 }
             }
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-
-    private void loadFixtures() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            JsonNode node = mapper.readTree(new File("src/main/resources/RangersUpcomingfixture.json"));
-            JsonNode nodeaye = node.get("data").findValue("upcoming").findValue("data");
-
-            List<Fixture> fixtures = Arrays.asList(mapper.readValue(nodeaye.traverse(), Fixture[].class));
-
-            fixtureRepository.saveAll(fixtures);
         } catch (IOException e) {
             System.out.println(e);
         }
