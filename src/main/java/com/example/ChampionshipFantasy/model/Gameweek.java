@@ -2,10 +2,13 @@ package com.example.ChampionshipFantasy.model;
 
 import com.fasterxml.jackson.annotation.*;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,6 +25,9 @@ public class Gameweek implements Serializable {
     @JsonProperty(value = "end")
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date endDate;
+
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "gameweek")
+    private List<PlayerGameweek> playerGameweeks;
 
     public Gameweek() {}
 
@@ -51,5 +57,13 @@ public class Gameweek implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public List<PlayerGameweek> getPlayerGameweeks() {
+        return playerGameweeks;
+    }
+
+    public void setPlayerGameweeks(List<PlayerGameweek> playerGameweeks) {
+        this.playerGameweeks = playerGameweeks;
     }
 }

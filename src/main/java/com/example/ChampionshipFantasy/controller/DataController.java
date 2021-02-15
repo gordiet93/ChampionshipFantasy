@@ -3,6 +3,7 @@ package com.example.ChampionshipFantasy.controller;
 import com.example.ChampionshipFantasy.model.*;
 import com.example.ChampionshipFantasy.model.player.Player;
 import com.example.ChampionshipFantasy.repository.*;
+import com.example.ChampionshipFantasy.service.FantasyTeamService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/data")
@@ -31,30 +29,25 @@ public class DataController {
     private PlayerRepository playerRepository;
     private FixtureRepository fixtureRepository;
     private PlayerGameweekRepository playerGameweekRepository;
-    private FantasyTeamRepository fantasyTeamRepository;
-    private FantasyTeamGameweekRepository fantasyTeamGameweekRepository;
+    private FantasyTeamService fantasyTeamService;
 
     @Autowired
     public DataController(TeamRepository teamRepository, GameweekRepository gameweekRepository, PlayerRepository playerRepository,
                           FixtureRepository fixtureRepository, PlayerGameweekRepository playerGameweekRepository,
-                          FantasyTeamRepository fantasyTeamRepository, FantasyTeamGameweekRepository fantasyTeamGameweekRepository) {
+                          FantasyTeamService fantasyTeamService) {
         this.teamRepository = teamRepository;
         this.gameweekRepository = gameweekRepository;
         this.playerRepository = playerRepository;
         this.fixtureRepository = fixtureRepository;
         this.playerGameweekRepository = playerGameweekRepository;
-        this.fantasyTeamRepository = fantasyTeamRepository;
-        this.fantasyTeamGameweekRepository = fantasyTeamGameweekRepository;
+        this.fantasyTeamService = fantasyTeamService;
     }
 
-    @PostMapping("/loadteamsandplayers")
+    @PostMapping("/loaddata")
     public void load() {
-        loadData();
-    }
-
-    @PostMapping("/loadgameweeks")
-    public void gameweeks() {
+        loadteamsAndPlayers();
         loadGameweeks();
+        loadFixtures();
     }
 
     @PostMapping("/loadlive")
@@ -62,47 +55,21 @@ public class DataController {
         loadlive();
     }
 
-    @PostMapping("/loadfixtures")
-    public void fix() {
-        loadFixtures();
-    }
-
-
     //should be done automatcially, not activited from rest
     //Look into creating one directional relationship between fntteamgmw and selections
     //create a getgameweek method to get the current gameweek, instead of using fantasyteam or selection objects
     @PostMapping("/startGameweek")
     public void startGamweek() {
-        List<FantasyTeam> fantasyTeams = fantasyTeamRepository.findAll();
-        //Gameweek nextGameweek = gameweekRepository.findFirstByStartDateAfter(new Date(System.currentTimeMillis()));
-        Long gameweekNum = 173644L;
-        Gameweek gameweek = gameweekRepository.getOne(gameweekNum);
-
-        for (FantasyTeam fantasyTeam : fantasyTeams) {
-            FantasyTeamGameweek fantasyTeamGameweek = new FantasyTeamGameweek(fantasyTeam, gameweek,
-                    false, fantasyTeam.getSelections());
-            fantasyTeamGameweekRepository.save(fantasyTeamGameweek);
-        }
+        fantasyTeamService.createNextGameweekForEachTeam();
     }
 
-    /*@PostMapping("/endGameweek")
+    @PostMapping("/endGameweek")
     public void endGameweekAndPrepareNext() {
-        List<FantasyTeamGameweekLive> fantasyTeamGameweekLives = fantasyTeamGameweekRepository.findAllWithLiveStatus();
-        List<Player> players = playerRepository.findAll();
-        Gameweek nextGamweek = gameweekRepository.findFirstByStartDateAfter(new Date(System.currentTimeMillis()));
-
-        for (Player player : players) {
-            playerGameweekRepository.save(new PlayerGameweek(player, nextGamweek));
-        }
-
-        for (FantasyTeamGameweekLive fantasyTeamGameweekLive : fantasyTeamGameweekLives) {
-            FantasyTeamGameweek fantasyTeamGameweek = fantasyTeamGameweekLive;
-
-        }
-    }*/
+        fantasyTeamService.updateTotalScores();
+    }
 
     //refactor
-    private void loadData() {
+    private void loadteamsAndPlayers() {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode node = mapper.readTree(new File("src/main/resources/TeamAndPlayer.json"));
@@ -148,6 +115,7 @@ public class DataController {
     }
 
     //make urls constants
+    //should run every minute when a game is on to update the player gameweeks
     private void loadlive() {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -182,6 +150,8 @@ public class DataController {
             System.out.println(e);
         }
     }
+
+
 
     private String callURL(String url1) throws IOException {
         String contentString;

@@ -12,11 +12,6 @@ public class PlayerGameweekListener {
         pG.setPoints(calculatePoints(pG));
     }
 
-    @PostLoad //cant remember why this was previously commented out
-    public void postLoad(PlayerGameweek pG) {
-        pG.setPoints(calculatePoints(pG));
-    }
-
     private int calculatePoints(PlayerGameweek pG) {
         int total = 0;
         Player player = pG.getPlayer();

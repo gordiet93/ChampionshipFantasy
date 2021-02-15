@@ -1,5 +1,6 @@
 package com.example.ChampionshipFantasy.model;
 
+import com.example.ChampionshipFantasy.model.player.Player;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
@@ -17,15 +18,15 @@ public class Selection extends AuditModel {
 
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
-    @JsonProperty(value = "player_gameweek_id")
-    private PlayerGameweek playerGameweek;
+    @JsonProperty(value = "player_id")
+    private Player player;
 
     private boolean captained;
 
     public Selection() {}
 
-    public Selection(PlayerGameweek playerGameweek, boolean captained) {
-        this.playerGameweek = playerGameweek;
+    public Selection(Player player, boolean captained) {
+        this.player = player;
         this.captained = captained;
     }
 
@@ -45,12 +46,12 @@ public class Selection extends AuditModel {
         this.points = points;
     }
 
-    public PlayerGameweek getPlayerGameweek() {
-        return playerGameweek;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setPlayerGameweek(PlayerGameweek playerGameweek) {
-        this.playerGameweek = playerGameweek;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     public boolean isCaptained() {
