@@ -7,24 +7,26 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+
 import java.util.List;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "user_id")
 @Entity
 public class FantasyTeam extends AuditModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "user_id")
     private Long id;
     private String name;
 
-    @Formula("(SELECT SUM(f.points) FROM fantasy_team_gameweek f WHERE f.fantasy_team_id = id)")
+    @Formula("(SELECT SUM(f.points) FROM fantasy_team_gameweek f WHERE f.fantasy_team_user_id = user_id)")
     private Integer totalPoints;
 
     @JsonProperty(value = "user_id")
     @JsonIdentityReference(alwaysAsId = true)
     @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fantasyTeams",
@@ -37,9 +39,6 @@ public class FantasyTeam extends AuditModel {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Selection> selections;
-
-    public FantasyTeam() {
-    }
 
     public FantasyTeam(String name, User user) {
         this.name = name;

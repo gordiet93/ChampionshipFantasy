@@ -1,19 +1,18 @@
 package com.example.ChampionshipFantasy.dto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 public class FantasyTeamDto {
 
+    @NotEmpty
     private String name;
-    private Long userId;
+
+    @Valid
     private List<SelectionDto> selections;
 
     public FantasyTeamDto() {
-    }
-
-    public FantasyTeamDto(String name, Long userId) {
-        this.name = name;
-        this.userId = userId;
     }
 
     public String getName() {
@@ -22,14 +21,6 @@ public class FantasyTeamDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userID) {
-        this.userId = userID;
     }
 
     public List<SelectionDto> getSelections() {

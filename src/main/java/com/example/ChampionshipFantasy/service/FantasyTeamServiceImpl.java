@@ -1,10 +1,7 @@
 package com.example.ChampionshipFantasy.service;
 
 import com.example.ChampionshipFantasy.dto.SelectionDto;
-import com.example.ChampionshipFantasy.model.FantasyTeam;
-import com.example.ChampionshipFantasy.model.FantasyTeamGameweek;
-import com.example.ChampionshipFantasy.model.Gameweek;
-import com.example.ChampionshipFantasy.model.Selection;
+import com.example.ChampionshipFantasy.model.*;
 import com.example.ChampionshipFantasy.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

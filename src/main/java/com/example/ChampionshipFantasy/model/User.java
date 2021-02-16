@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -15,12 +16,21 @@ public class User extends AuditModel {
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private Long id;
+
     private String name;
     private String email;
 
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToOne
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @PrimaryKeyJoinColumn
     private FantasyTeam fantasyTeam;
+
+    public User() {}
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 
     public Long getId() {
         return id;
@@ -51,6 +61,5 @@ public class User extends AuditModel {
     }
 
     public void setFantasyTeam(FantasyTeam fantasyTeam) {
-        this.fantasyTeam = fantasyTeam;
     }
 }

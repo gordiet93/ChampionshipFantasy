@@ -1,9 +1,14 @@
 package com.example.ChampionshipFantasy.dto;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class SelectionDto {
 
+    @Min(1)
     private Long playerId;
-    private Long gameweekId;
+
+    @NotNull
     private boolean captained;
 
     public SelectionDto() {
@@ -23,13 +28,5 @@ public class SelectionDto {
 
     public void setCaptained(boolean captained) {
         this.captained = captained;
-    }
-
-    public Long getGameweekId() {
-        return gameweekId;
-    }
-
-    public void setGameweekId(Long gameweekId) {
-        this.gameweekId = gameweekId;
     }
 }
