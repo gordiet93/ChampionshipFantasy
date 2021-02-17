@@ -39,7 +39,7 @@ public class RepositoryService {
         return gameweekRepository.getOne(id);
     }
 
-    public Player getPlayerReference(Long id ) { return playerRepository.getOne(id); }
+    public Player getPlayerReference(Long id ) { return playerRepository.findById(id).orElse(null); }
 
     public PlayerGameweek getPlayerGameweekByPlayerIdAndGameweekId(Long playerId, Long gameweekId) {
         return playerGameweekRepository.findByPlayerIdAndGameweekId(playerId, gameweekId);

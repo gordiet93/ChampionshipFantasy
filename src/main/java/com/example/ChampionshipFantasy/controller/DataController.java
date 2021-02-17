@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.util.*;
 
 @RestController
@@ -45,15 +46,16 @@ public class DataController {
 
     @PostMapping("/loaddata")
     public void load() {
-        loadteamsAndPlayers();
+        loadTeams();
+        loadPlayers();
         loadGameweeks();
         loadFixtures();
     }
 
-    @PostMapping("/loadlive")
-    public void live() {
-        loadlive();
-    }
+//    @PostMapping("/loadlive")
+//    public void live() {
+//        loadlive();
+//    }
 
     //should be done automatcially, not activited from rest
     //Look into creating one directional relationship between fntteamgmw and selections
@@ -68,33 +70,49 @@ public class DataController {
         fantasyTeamService.updateTotalScores();
     }
 
-    //refactor
-    private void loadteamsAndPlayers() {
+    private void loadTeams() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode node = mapper.readTree(new File("src/main/resources/TeamAndPlayer.json"));
-            List<Team> teamList = Arrays.asList(mapper.readValue(node.get("data").traverse(), Team[].class));
 
-            for (Team team : teamList) {
-                for (Player player : team.getPlayers()) {
+            String s = callURL("https://soccer.sportmonks.com/api/v2.0/teams/season/17141?api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J" );
+            JsonNode node = mapper.readTree(s);
+            List<Team> teams = Arrays.asList(mapper.readValue(node.get("data").traverse(), Team[].class));
+            teamRepository.saveAll(teams);
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void loadPlayers() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            for (Team team : teamRepository.findAll()) {
+                String s = callURL("https://soccer.sportmonks.com/api/v2.0/squad/season/17141/team/" + team.getId() +
+                        "?include=player&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J" );
+                JsonNode node = mapper.readTree(s);
+                List<Player> players = Arrays.asList(mapper.readValue(node.get("data").traverse(), Player[].class));
+                for (Player player : players) {
                     player.setTeam(team);
                 }
-                teamRepository.save(team);
+                playerRepository.saveAll(players);
             }
         } catch (IOException e) {
             System.out.println(e);
         }
     }
 
+
+
     private void loadGameweeks() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode node = mapper.readTree(new File("src/main/resources/gameweeks.json"));
-            List<Gameweek> gameweekList = Arrays.asList(mapper.readValue(node.get("data").get("rounds").get("data").traverse(), Gameweek[].class));
+            String s = callURL("https://soccer.sportmonks.com/api/v2.0/seasons/17141?include=rounds&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J" );
+            JsonNode node = mapper.readTree(s);
 
-            for (Gameweek gameweek : gameweekList) {
-                gameweekRepository.save(gameweek);
-            }
+            List<Gameweek> gameweeks = Arrays.asList(mapper.readValue(node.get("data").get("rounds").get("data").traverse(), Gameweek[].class));
+            gameweekRepository.saveAll(gameweeks);
+
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -103,53 +121,58 @@ public class DataController {
     private void loadFixtures() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode node = mapper.readTree(new File("src/main/resources/RangersUpcomingfixture.json"));
-            JsonNode nodeaye = node.get("data").findValue("upcoming").findValue("data");
-
-            List<Fixture> fixtures = Arrays.asList(mapper.readValue(nodeaye.traverse(), Fixture[].class));
-
-            fixtureRepository.saveAll(fixtures);
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-
-    //make urls constants
-    //should run every minute when a game is on to update the player gameweeks
-    private void loadlive() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            //String s = callURL("https://soccer.sportmonks.com/api/v2.0/livescores?leagues=501&include=lineup&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J");
-            JsonNode base = mapper.readTree(new File("src/main/resources/HeartsHibsLive.json"));
-            List<Fixture> fixtures = Arrays.asList(mapper.readValue(base.get("data").traverse(), Fixture[].class));
-
-            for (Fixture fixture : fixtures) {
-                fixtureRepository.save(fixture);
-                Gameweek gameweek = fixture.getGameweek();
-
-                if (fixture.getLineUps() != null) {
-                    for (LineUp lineup : fixture.getLineUps()) {
-                        Player player = playerRepository.findById(lineup.getPlayerId()).orElse(null);
-
-                        if (player != null) {
-                            player.setName(lineup.getPlayerName());
-                            playerRepository.save(player);
-
-                            PlayerGameweek playerGameweek = playerGameweekRepository.findByPlayerIdAndGameweekId(lineup.getPlayerId(),
-                                    fixture.getGameweek().getId());
-                            //should never need this if statement
-                            if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
-
-                            playerGameweek.setMinutesPlayed(fixture.getMintuesPlayed());
-                            playerGameweekRepository.save(playerGameweek);
-                        }
-                    }
-                }
+            for (Gameweek gameweek : gameweekRepository.findAll()) {
+                String s = callURL("https://soccer.sportmonks.com/api/v2.0/rounds/" + gameweek.getId() +
+                        "?include=fixtures.events,fixtures.lineup&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J");
+                JsonNode node = mapper.readTree(s);
+                List<Fixture> fixtures = Arrays.asList(mapper.readValue(node.get("data")
+                        .findValue("fixtures").get("data").traverse(), Fixture[].class));
+                fixtureRepository.saveAll(fixtures);
             }
         } catch (IOException e) {
             System.out.println(e);
         }
     }
+
+    private void loadPlayerDetails() {
+        for (Player player : playerRepository.findAll()) {
+
+        }
+    }
+
+    //make urls constants
+    //should run every minute when a game is on to update the player gameweeks
+//    private void loadlive() {
+//        ObjectMapper mapper = new ObjectMapper();
+//        try {
+//
+//            for (Fixture fixture : fixtures) {
+//                fixtureRepository.save(fixture);
+//                Gameweek gameweek = fixture.getGameweek();
+//
+//                if (fixture.getLineUps() != null) {
+//                    for (LineUp lineup : fixture.getLineUps()) {
+//                        Player player = playerRepository.findById(lineup.getPlayerId()).orElse(null);
+//
+//                        if (player != null) {
+//                            player.setName(lineup.getPlayerName());
+//                            playerRepository.save(player);
+//
+//                            PlayerGameweek playerGameweek = playerGameweekRepository.findByPlayerIdAndGameweekId(lineup.getPlayerId(),
+//                                    fixture.getGameweek().getId());
+//                            //should never need this if statement
+//                            if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
+//
+//                            playerGameweek.setMinutesPlayed(fixture.getMintuesPlayed());
+//                            playerGameweekRepository.save(playerGameweek);
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (IOException e) {
+//            System.out.println(e);
+//        }
+//    }
 
 
 
@@ -157,7 +180,7 @@ public class DataController {
         String contentString;
         URL url = new URL(url1);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        //con.setRequestProperty("X-Auth-Token", "bc2a33c0a22244ce83c272a2e9562655");
+       //con.setRequestProperty("X-Auth-Token", "bc2a33c0a22244ce83c272a2e9562655");
         con.setRequestMethod("GET");
 
         BufferedReader in = new BufferedReader(
@@ -174,4 +197,5 @@ public class DataController {
 
         return contentString;
     }
+
 }

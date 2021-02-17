@@ -26,6 +26,8 @@ public class EventDeserializer extends JsonDeserializer<Event> {
 
         long id = node.get("id").asLong();
         Team team = repositoryService.getTeamReference(node.get("team_id").asLong());
+
+
         Player player = repositoryService.getPlayerReference(node.get("player_id").asLong());
         Player relatedPlayer = null;
 
@@ -34,7 +36,10 @@ public class EventDeserializer extends JsonDeserializer<Event> {
         }
 
         int minute = node.get("minute").asInt();
-        EventType eventType = EventType.valueOf(node.get("type").textValue());
+
+        String eventString = node.get("type").textValue();
+        if (eventString.equals("own-goal")) eventString = "owngoal";
+        EventType eventType = EventType.valueOf(eventString);
 
         return new Event(id, player, relatedPlayer, team, minute, eventType);
     }

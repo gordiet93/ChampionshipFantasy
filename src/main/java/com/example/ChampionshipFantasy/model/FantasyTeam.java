@@ -17,10 +17,6 @@ public class FantasyTeam extends AuditModel {
     @Id
     @Column(name = "user_id")
     private Long id;
-    private String name;
-
-    @Formula("(SELECT SUM(f.points) FROM fantasy_team_gameweek f WHERE f.fantasy_team_user_id = user_id)")
-    private Integer totalPoints;
 
     @JsonProperty(value = "user_id")
     @JsonIdentityReference(alwaysAsId = true)
@@ -28,6 +24,11 @@ public class FantasyTeam extends AuditModel {
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
+
+    private String name;
+
+    @Formula("(SELECT SUM(f.points) FROM fantasy_team_gameweek f WHERE f.fantasy_team_user_id = user_id)")
+    private Integer totalPoints;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fantasyTeams",
             targetEntity = League.class

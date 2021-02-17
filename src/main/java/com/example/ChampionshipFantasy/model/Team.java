@@ -1,6 +1,5 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.deserializer.PlayerListDeserializer;
 import com.example.ChampionshipFantasy.model.player.Player;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -16,7 +15,6 @@ public class Team extends AuditModel {
     private String name;
 
     @JsonProperty(value = "squad", access = JsonProperty.Access.WRITE_ONLY)
-    @JsonDeserialize(using = PlayerListDeserializer.class)
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Player> players;
 

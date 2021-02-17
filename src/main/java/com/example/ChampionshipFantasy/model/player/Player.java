@@ -2,6 +2,7 @@ package com.example.ChampionshipFantasy.model.player;
 
 import com.example.ChampionshipFantasy.model.*;
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,11 +25,12 @@ public abstract class Player extends AuditModel {
     private static final int ABOVE_MINS_THRESHOLD_POINTS = 2;
     private static final int BELOW_MINS_THRESHOLD_POINTS = 1;
     private static final int MINS_THRESHOLD = 60;
-    private static final int ASSIST_POINTS = 4;
+    private static final int ASSIST_POINTS = 3;
 
     @Id
     @JsonProperty("player_id")
     private Long id;
+
     private String name;
     private String nationality;
     private Integer Number;
@@ -36,7 +38,7 @@ public abstract class Player extends AuditModel {
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="player")
     private List<PlayerGameweek> playerGameweeks;
 
-    @JsonProperty(value = "team_Id")
+    @JsonProperty(value = "team_id")
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Team team;
@@ -109,5 +111,11 @@ public abstract class Player extends AuditModel {
 
     public void setNumber(Integer number) {
         Number = number;
+    }
+
+    @JsonProperty("player")
+    private void setDetails(JsonNode player) {
+        name = player.get("data").get("display_name").asText();
+        nationality = player.get("data").get("nationality").asText();
     }
 }
