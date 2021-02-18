@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Entity
 @EntityListeners(PlayerGameweekListener.class)
@@ -31,7 +32,18 @@ public class PlayerGameweek extends AuditModel {
     @Formula("(SELECT count(*) FROM event e WHERE e.related_player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 4)")
     private Integer assists;
 
+    private Integer goalsConceded;
+
     private Integer minutesPlayed;
+
+    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 6)")
+    private Integer ownGoals;
+
+    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 1)")
+    private Integer yellowCards;
+
+    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 3)")
+    private Integer redCards;
 
     private Integer points;
 
@@ -39,8 +51,12 @@ public class PlayerGameweek extends AuditModel {
         this.player = player;
         this.gameweek = gameweek;
         this.goalsScored = 0;
+        this.goalsConceded = 0;
         this.assists = 0;
         this.minutesPlayed = 0;
+        this.redCards = 0;
+        this.yellowCards = 0;
+        this.ownGoals = 0;
     }
 
     public PlayerGameweek() {}
@@ -85,6 +101,14 @@ public class PlayerGameweek extends AuditModel {
         this.goalsScored = goalsScored;
     }
 
+    public Integer getGoalsConceded() {
+        return goalsConceded;
+    }
+
+    public void setGoalsConceded(Integer goalsConceded) {
+        this.goalsConceded = goalsConceded;
+    }
+
     public Integer getAssists() {
         return assists;
     }
@@ -99,5 +123,29 @@ public class PlayerGameweek extends AuditModel {
 
     public void setMinutesPlayed(Integer minutesPlayed) {
         this.minutesPlayed = minutesPlayed;
+    }
+
+    public Integer getYellowCards() {
+        return yellowCards;
+    }
+
+    public void setYellowCards(Integer yellowCards) {
+        this.yellowCards = yellowCards;
+    }
+
+    public Integer getRedCards() {
+        return redCards;
+    }
+
+    public void setRedCards(Integer redCards) {
+        this.redCards = redCards;
+    }
+
+    public Integer getOwnGoals() {
+        return ownGoals;
+    }
+
+    public void setOwnGoals(Integer ownGoals) {
+        this.ownGoals = ownGoals;
     }
 }

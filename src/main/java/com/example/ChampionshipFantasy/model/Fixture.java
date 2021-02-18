@@ -1,6 +1,7 @@
 package com.example.ChampionshipFantasy.model;
 
 import com.example.ChampionshipFantasy.deserializer.FixtureDeserializer;
+import com.example.ChampionshipFantasy.model.lineUp.LineUp;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

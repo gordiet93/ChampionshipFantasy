@@ -22,10 +22,14 @@ import java.util.List;
 })
 public abstract class Player extends AuditModel {
 
+    private static final int ZERO_MINS_POINTS = 0;
     private static final int ABOVE_MINS_THRESHOLD_POINTS = 2;
     private static final int BELOW_MINS_THRESHOLD_POINTS = 1;
     private static final int MINS_THRESHOLD = 60;
     private static final int ASSIST_POINTS = 3;
+    private static final int YELLOW_CARD_POINTS = -1;
+    private static final int RED_CARD_POINTS = -3;
+    private static final int OWN_GOAL_POINTS = -2;
 
     @Id
     @JsonProperty("player_id")
@@ -63,6 +67,22 @@ public abstract class Player extends AuditModel {
 
     public static int getAssistPoints() {
         return ASSIST_POINTS;
+    }
+
+    public static int getYellowCardPoints() {
+        return YELLOW_CARD_POINTS;
+    }
+
+    public static int getRedCardPoints() {
+        return RED_CARD_POINTS;
+    }
+
+    public static int getZeroMinsPoints() {
+        return ZERO_MINS_POINTS;
+    }
+
+    public static int getOwnGoalPoints() {
+        return OWN_GOAL_POINTS;
     }
 
     public Long getId() {

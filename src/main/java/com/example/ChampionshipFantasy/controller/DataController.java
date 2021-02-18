@@ -1,6 +1,8 @@
 package com.example.ChampionshipFantasy.controller;
 
 import com.example.ChampionshipFantasy.model.*;
+import com.example.ChampionshipFantasy.model.lineUp.LineUp;
+import com.example.ChampionshipFantasy.model.lineUp.Starter;
 import com.example.ChampionshipFantasy.model.player.Player;
 import com.example.ChampionshipFantasy.repository.*;
 import com.example.ChampionshipFantasy.service.FantasyTeamService;
@@ -11,15 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.PostLoad;
+import javax.validation.constraints.Email;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLOutput;
 import java.util.*;
+
+import static java.util.Comparator.comparing;
 
 @RestController
 @RequestMapping("/data")
@@ -52,10 +54,15 @@ public class DataController {
         loadFixtures();
     }
 
-//    @PostMapping("/loadlive")
-//    public void live() {
-//        loadlive();
-//    }
+    @PostMapping("/createplayergameweeks")
+    public void createPlayerGWs() {
+        createAllPlayerGameweeks();
+    }
+
+    @PostMapping("/loadlive")
+    public void loadlive() {
+        live();
+    }
 
     //should be done automatcially, not activited from rest
     //Look into creating one directional relationship between fntteamgmw and selections
@@ -102,8 +109,6 @@ public class DataController {
         }
     }
 
-
-
     private void loadGameweeks() {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -133,48 +138,82 @@ public class DataController {
             System.out.println(e);
         }
     }
-
-    private void loadPlayerDetails() {
-        for (Player player : playerRepository.findAll()) {
-
-        }
     }
 
     //make urls constants
     //should run every minute when a game is on to update the player gameweeks
-//    private void loadlive() {
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//
-//            for (Fixture fixture : fixtures) {
-//                fixtureRepository.save(fixture);
-//                Gameweek gameweek = fixture.getGameweek();
-//
-//                if (fixture.getLineUps() != null) {
-//                    for (LineUp lineup : fixture.getLineUps()) {
-//                        Player player = playerRepository.findById(lineup.getPlayerId()).orElse(null);
-//
-//                        if (player != null) {
-//                            player.setName(lineup.getPlayerName());
-//                            playerRepository.save(player);
-//
-//                            PlayerGameweek playerGameweek = playerGameweekRepository.findByPlayerIdAndGameweekId(lineup.getPlayerId(),
-//                                    fixture.getGameweek().getId());
-//                            //should never need this if statement
-//                            if (playerGameweek == null) playerGameweek = new PlayerGameweek(player, gameweek);
-//
-//                            playerGameweek.setMinutesPlayed(fixture.getMintuesPlayed());
-//                            playerGameweekRepository.save(playerGameweek);
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (IOException e) {
-//            System.out.println(e);
-//        }
-//    }
+    private void live() {
+        //should get the current gameweek
+        //load all the fixtures in the current gameweek, call their api and then go through each one updating the playergameweeks
+        //for testing just doing all the gameweeks
 
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            for (Gameweek gameweek : gameweekRepository.findAll()) {
+                String s = callURL("https://soccer.sportmonks.com/api/v2.0/rounds/" + gameweek.getId() +
+                        "?include=fixtures.events,fixtures.lineup,fixtures.bench&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J");
+                JsonNode node = mapper.readTree(s);
+                List<Fixture> fixtures = Arrays.asList(mapper.readValue(node.get("data")
+                        .findValue("fixtures").get("data").traverse(), Fixture[].class));
 
+                //could maybe call all off the playergameweeks at once and save all together,
+                // so only two DB calls instead of a lot
+               for (Fixture fixture : fixtures) {
+                   for (LineUp lineUp : fixture.getLineUps()) {
+                       PlayerGameweek playerGameweek = playerGameweekRepository.findByPlayerIdAndGameweekId(lineUp.getPlayerId(),
+                               fixture.getGameweek().getId());
+                       if (playerGameweek != null) {
+
+                           //work out total goals conceded here
+
+                           int goalsConceded = 0;
+
+                           List<Event> goals = new ArrayList<>();
+                           List<Event> subs = new ArrayList<>();
+                           for (Event event : fixture.getEvents()) {
+                               if (event.getType().equals(EventType.goal)
+                                       && !event.getTeam().getId().equals(lineUp.getTeamId())) {
+                                   goals.add(event);
+                               } else if (event.getType().equals(EventType.substitution)
+                                       && event.getRelatedPlayer().getId().equals(lineUp.getPlayerId())) {
+                                   subs.add(event);
+                               }
+                           }
+
+                           if (!goals.isEmpty()) {
+                               if (lineUp instanceof Starter) {
+                                   for (Event goal : goals) {
+                                       if (goal.getMinute() < lineUp.getMinutesPlayed()) {
+                                           goalsConceded++;
+                                       } else if(goal.getMinute() == lineUp.getMinutesPlayed()) {
+                                           for (Event sub : subs) {
+                                               if (goal.getId() < sub.getId()) goalsConceded++;
+                                           }
+                                       }
+                                   }
+                               }
+                           }
+
+                           playerGameweek.setMinutesPlayed(lineUp.getMinutesPlayed());
+                           playerGameweek.setGoalsConceded(goalsConceded);
+                           playerGameweekRepository.save(playerGameweek);
+                       }
+                   }
+               }
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void createAllPlayerGameweeks() {
+        for (Gameweek gameweek : gameweekRepository.findAll()) {
+            for (Player player : playerRepository.findAll()) {
+                PlayerGameweek playerGameweek = new PlayerGameweek(player, gameweek);
+                playerGameweekRepository.save(playerGameweek);
+            }
+        }
+    }
 
     private String callURL(String url1) throws IOException {
         String contentString;
