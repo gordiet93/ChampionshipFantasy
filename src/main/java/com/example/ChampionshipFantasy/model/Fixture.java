@@ -1,50 +1,51 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.deserializer.FixtureDeserializer;
-import com.example.ChampionshipFantasy.model.lineUp.LineUp;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.example.ChampionshipFantasy.deserializer.EventListDe;
+import com.example.ChampionshipFantasy.model.enums.FixtureStatus;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonDeserialize(using = FixtureDeserializer.class)
 public class Fixture {
 
     @Id
     private Long id;
 
+    @JsonProperty(value = "round_id")
     @ManyToOne
     private Gameweek gameweek;
 
+    @JsonProperty(value = "localteam_id")
     @ManyToOne
     private Team homeTeam;
 
+    @JsonProperty(value = "visitorteam_id")
     @ManyToOne
     private Team awayTeam;
 
     @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL)
     private List<Event> events;
 
-    private FixtureStatus status;
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL)
+    private List<PlayerGameweek> playerGameweeks;
 
-    @Transient
-    private List<LineUp> lineUps;
+    private FixtureStatus status;
 
     @Transient
     private Integer mintuesPlayed;
 
     public Fixture() {}
 
-    public Fixture(Long id, Gameweek gameweek, Team homeTeam, Team awayTeam, FixtureStatus status, int mintuesPlayed) {
+    public Fixture(Long id) {
         this.id = id;
-        this.gameweek = gameweek;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.status = status;
-        this.mintuesPlayed = mintuesPlayed;
     }
 
     public Long getId() {
@@ -79,6 +80,22 @@ public class Fixture {
         this.awayTeam = awayTeam;
     }
 
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
+
+    public List<PlayerGameweek> getPlayerGameweeks() {
+        return playerGameweeks;
+    }
+
+    public void setPlayerGameweeks(List<PlayerGameweek> playerGameweeks) {
+        this.playerGameweeks = playerGameweeks;
+    }
+
     public FixtureStatus getStatus() {
         return status;
     }
@@ -86,7 +103,16 @@ public class Fixture {
     public void setStatus(FixtureStatus status) {
         this.status = status;
     }
-//
+
+    public Integer getMintuesPlayed() {
+        return mintuesPlayed;
+    }
+
+    public void setMintuesPlayed(Integer mintuesPlayed) {
+        this.mintuesPlayed = mintuesPlayed;
+    }
+
+    //
 //    @JsonProperty("time")
 //    private void mapFixtureStatus(Map<String, Object> time) {
 //        this.status = FixtureStatus.valueOf(time.get("status").toString());
@@ -97,27 +123,17 @@ public class Fixture {
 //        this.gameweek = new Gameweek(id);
 //    }
 
-    public List<LineUp> getLineUps() {
-        return lineUps;
+    @JsonProperty("events")
+    private void setEvents(JsonNode data) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        events = Arrays.asList(mapper.readValue(data.get("data").traverse(), Event[].class));
     }
-
-    public void setLineUps(List<LineUp> lineUps) {
-        this.lineUps = lineUps;
-    }
-
-    public List<Event> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<Event> events) {
-        this.events = events;
-    }
-
-    public Integer getMintuesPlayed() {
-        return mintuesPlayed;
-    }
-
-    public void setMintuesPlayed(Integer mintuesPlayed) {
-        this.mintuesPlayed = mintuesPlayed;
-    }
+//
+//    @JsonProperty("lineup")
+//    @JsonAlias("bench")
+//    private void setPlayerGameweeks(JsonNode data) throws IOException {
+//        ObjectMapper mapper = new ObjectMapper();
+//        playerGameweeks.addAll(Arrays.asList(mapper.readValue(data.get("data").traverse(), PlayerGameweek[].class)));
+//    }
 }
+

@@ -1,4 +1,4 @@
-package com.example.ChampionshipFantasy.model;
+package com.example.ChampionshipFantasy.model.enums;
 
 public enum FixtureStatus {
     NS, FT, LIVE, POSTP

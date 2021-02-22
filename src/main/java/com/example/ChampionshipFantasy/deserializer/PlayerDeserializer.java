@@ -1,6 +1,6 @@
 package com.example.ChampionshipFantasy.deserializer;
 
-import com.example.ChampionshipFantasy.model.Team;
+import com.example.ChampionshipFantasy.model.Player;
 import com.example.ChampionshipFantasy.service.RepositoryService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -10,20 +10,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class TeamDeserializer extends JsonDeserializer<Team> {
+public class PlayerDeserializer extends JsonDeserializer<Player> {
 
     private RepositoryService repositoryService;
 
-    TeamDeserializer() {
+    PlayerDeserializer() {
         this.repositoryService = RepositoryService.instance;
     }
 
     @Override
-    public Team deserialize(JsonParser jsonParser,
+    public Player deserialize(JsonParser jsonParser,
                                 DeserializationContext deserializationContext) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonParser);
 
-        return repositoryService.getTeamReference(node.asLong());
+        return repositoryService.getPlayerReference(node.asLong());
     }
 }

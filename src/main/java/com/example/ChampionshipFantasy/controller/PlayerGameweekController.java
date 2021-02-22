@@ -24,8 +24,8 @@ public class PlayerGameweekController {
         return playerGameweekRepository.findById(id).orElse(null);
     }
 
-    @GetMapping
-    public List<PlayerGameweek> findByGameweek(@RequestParam("gameweekid") Long id) {
-        return playerGameweekRepository.findByGameweekId(id);
-    }
+//    @GetMapping
+//    public List<PlayerGameweek> findByGameweek(@RequestParam("gameweekid") Long id) {
+//        return playerGameweekRepository.findByGameweekId(id);
+//    }
 }

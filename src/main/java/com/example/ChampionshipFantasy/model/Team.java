@@ -1,28 +1,38 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.model.player.Player;
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.javafx.binding.SelectBinding;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
+// not used atm, needed for
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id",
+//        scope = Team.class)
 public class Team extends AuditModel {
 
     @Id
     private Long id;
     private String name;
 
-    @JsonProperty(value = "squad", access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Player> players;
 
-    public Team() {
-    }
+    public Team() {}
 
     public Team(Long id) {
         this.id = id;
+    }
+
+    //need this constructor as sportmonks api json is sometimes read as a string for team_id
+    public Team(String id) {
+        this.id = Long.valueOf(id);
     }
 
     public Long getId() {
@@ -48,4 +58,11 @@ public class Team extends AuditModel {
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
+
+    @JsonProperty("squad")
+    private void setPlayers(JsonNode data) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        players = Arrays.asList(mapper.readValue(data.get("data").traverse(), Player[].class));
+    }
+
 }

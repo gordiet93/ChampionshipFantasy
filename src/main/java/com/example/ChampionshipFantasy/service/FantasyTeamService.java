@@ -13,6 +13,6 @@ public interface FantasyTeamService {
     void addSelections(Long id, List<SelectionDto> selectionDtos);
     List<Selection> getSelections(Long id);
     void createNextGameweekForEachTeam();
-    void updateTotalScores();
+    //void updateTotalScores();
     void updateSelections(Long id, List<SelectionDto> selectionDtos);
 }

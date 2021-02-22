@@ -1,18 +1,21 @@
 package com.example.ChampionshipFantasy.model;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonIdentityInfo(scope = Gameweek.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Gameweek implements Serializable {
 
     @Id
@@ -26,8 +29,8 @@ public class Gameweek implements Serializable {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date endDate;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "gameweek")
-    private List<PlayerGameweek> playerGameweeks;
+    @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy = "gameweek")
+    private List<Fixture> fixtures;
 
     public Gameweek() {}
 
@@ -59,11 +62,18 @@ public class Gameweek implements Serializable {
         this.endDate = endDate;
     }
 
-    public List<PlayerGameweek> getPlayerGameweeks() {
-        return playerGameweeks;
+    public List<Fixture> getFixtures() {
+        return fixtures;
     }
 
-    public void setPlayerGameweeks(List<PlayerGameweek> playerGameweeks) {
-        this.playerGameweeks = playerGameweeks;
+    public void setFixtures(List<Fixture> fixtures) {
+        this.fixtures = fixtures;
     }
+
+    @JsonProperty("fixtures")
+    private void setFixtures(JsonNode data) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        fixtures = Arrays.asList(mapper.readValue(data.get("data").traverse(), Fixture[].class));
+    }
+
 }

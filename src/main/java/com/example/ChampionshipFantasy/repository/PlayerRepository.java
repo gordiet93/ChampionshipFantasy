@@ -1,6 +1,6 @@
 package com.example.ChampionshipFantasy.repository;
 
-import com.example.ChampionshipFantasy.model.player.Player;
+import com.example.ChampionshipFantasy.model.Player;
 import com.example.ChampionshipFantasy.model.PlayerSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

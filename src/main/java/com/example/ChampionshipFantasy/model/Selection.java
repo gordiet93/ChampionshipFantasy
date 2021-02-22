@@ -1,6 +1,5 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.model.player.Player;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;

@@ -1,10 +1,10 @@
 package com.example.ChampionshipFantasy.service;
 
-import com.example.ChampionshipFantasy.model.*;
-import com.example.ChampionshipFantasy.repository.*;
+import com.example.ChampionshipFantasy.model.Player;
+import com.example.ChampionshipFantasy.model.Team;
+import com.example.ChampionshipFantasy.repository.PlayerRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.bind.v2.model.core.ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,53 +15,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Service
-public class RepositoryService {
+public class PlayerService {
 
-    public static RepositoryService instance;
 
-    private GameweekRepository gameweekRepository;
     private PlayerRepository playerRepository;
-    private TeamRepository teamRepository;
-    private PlayerGameweekRepository playerGameweekRepository;
-    private FixtureRepository fixtureRepository;
+
 
     @Autowired
-    public RepositoryService(GameweekRepository gameweekRepository, PlayerRepository playerRepository,
-                             TeamRepository teamRepository, PlayerGameweekRepository playerGameweekRepository,
-                             FixtureRepository fixtureRepository) {
-        this.gameweekRepository = gameweekRepository;
+    public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
-        this.teamRepository = teamRepository;
-        this.playerGameweekRepository = playerGameweekRepository;
-        this.fixtureRepository = fixtureRepository;
-        RepositoryService.instance = this;
     }
-
-    public Team getTeamReference(Long id) {
-        return teamRepository.getOne(id);
-    }
-
-    public Gameweek getGameweekReference(Long id) {
-        return gameweekRepository.findById(id).orElse(null);
-    }
-
-    public Fixture getFixtureReference(Long id) {
-        return fixtureRepository.getOne(id);
-    }
-
-    //todo check if these are calling just the references of the object or not
-    public Player getPlayerReference(Long id ) {
-        return playerRepository.getOne(id);
-    }
-
-
-    public PlayerGameweek getPlayerGameweekReference(long id) {
-        return playerGameweekRepository.getOne(id);
-    }
-
-
-
-    public Player savePlayer(Player player) { playerRepository.save(player); return player; }
 
     public Player getPlayerandSave(long playerId) {
         Player player = new Player();
@@ -101,3 +64,5 @@ public class RepositoryService {
         return contentString;
     }
 }
+
+

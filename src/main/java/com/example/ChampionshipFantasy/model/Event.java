@@ -1,12 +1,8 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.deserializer.EventDeserializer;
-import com.example.ChampionshipFantasy.model.*;
-import com.example.ChampionshipFantasy.model.player.Player;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import com.example.ChampionshipFantasy.model.enums.EventType;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -14,31 +10,35 @@ import javax.persistence.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@JsonDeserialize(using = EventDeserializer.class)
 public class Event extends AuditModel {
 
     @Id
     private Long id;
 
-    @ManyToOne
     @JsonProperty(value = "player_id")
+    @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Player player;
 
-    @ManyToOne
     @JsonProperty(value = "related_player_id")
     @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Player relatedPlayer;
 
-    @ManyToOne
+    @JsonProperty(value = "fixture_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Fixture fixture;
 
-    @ManyToOne
-    private Gameweek gameweek;
 
+    @JsonProperty(value = "team_id")
     @ManyToOne
+    @NotFound(action = NotFoundAction.IGNORE)
     private Team team;
 
     private Integer minute;
+
+    @Enumerated(EnumType.STRING)
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
     private EventType type;
 
     public Event(Long id, Player player, Player relatedPlayer, Team team, Integer minute, EventType type) {
@@ -82,14 +82,6 @@ public class Event extends AuditModel {
 
     public void setFixture(Fixture fixture) {
         this.fixture = fixture;
-    }
-
-    public Gameweek getGameweek() {
-        return gameweek;
-    }
-
-    public void setGameweek(Gameweek gameweek) {
-        this.gameweek = gameweek;
     }
 
     public Team getTeam() {

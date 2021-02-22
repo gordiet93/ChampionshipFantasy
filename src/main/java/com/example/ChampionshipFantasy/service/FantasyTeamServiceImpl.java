@@ -89,26 +89,26 @@ public class FantasyTeamServiceImpl implements FantasyTeamService {
         }
     }
 
-    public void updateTotalScores() {
-        List<FantasyTeamGameweek> fantasyTeamGameweeks = fantasyTeamGameweekRepository.findAll();
-
-        for (FantasyTeamGameweek fantasyTeamGameweek : fantasyTeamGameweeks) {
-            FantasyTeam fantasyTeam = fantasyTeamGameweek.getFantasyTeam();
-            int totalPoints = fantasyTeam.getTotalPoints();
-            for (Selection selection : fantasyTeamGameweek.getSelections()) {
-                selection.setPoints(calculateCaptainPoints(selection, fantasyTeamGameweek.getGameweek()));
-                totalPoints += selection.getPoints();
-            }
-            fantasyTeam.setTotalPoints(totalPoints);
-            fantasyTeamRepository.save(fantasyTeam);
-        }
-    }
-
-    private int calculateCaptainPoints(Selection selection, Gameweek gameweek) {
-        int total = playerGameweekRepository.findByPlayerIdAndGameweekId(selection.getId(), gameweek.getId()).getPoints();
-        if (selection.isCaptained()) {
-            total = total * 2;
-        }
-        return total;
-    }
+//    public void updateTotalScores() {
+//        List<FantasyTeamGameweek> fantasyTeamGameweeks = fantasyTeamGameweekRepository.findAll();
+//
+//        for (FantasyTeamGameweek fantasyTeamGameweek : fantasyTeamGameweeks) {
+//            FantasyTeam fantasyTeam = fantasyTeamGameweek.getFantasyTeam();
+//            int totalPoints = fantasyTeam.getTotalPoints();
+//            for (Selection selection : fantasyTeamGameweek.getSelections()) {
+//                selection.setPoints(calculateCaptainPoints(selection, fantasyTeamGameweek.getGameweek()));
+//                totalPoints += selection.getPoints();
+//            }
+//            fantasyTeam.setTotalPoints(totalPoints);
+//            fantasyTeamRepository.save(fantasyTeam);
+//        }
+//    }
+//
+//    private int calculateCaptainPoints(Selection selection, Gameweek gameweek) {
+//        int total = playerGameweekRepository.findByPlayerIdAndGameweekId(selection.getId(), gameweek.getId()).getPoints();
+//        if (selection.isCaptained()) {
+//            total = total * 2;
+//        }
+//        return total;
+//    }
 }

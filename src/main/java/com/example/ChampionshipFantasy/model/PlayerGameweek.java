@@ -1,15 +1,13 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.model.player.Player;
+import com.example.ChampionshipFantasy.model.enums.LineUpType;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.annotations.Formula;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 
 @Entity
-@EntityListeners(PlayerGameweekListener.class)
 public class PlayerGameweek extends AuditModel {
 
     @Id
@@ -21,42 +19,65 @@ public class PlayerGameweek extends AuditModel {
     @JsonProperty("player_id")
     private Player player;
 
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("team_id")
+    private Team team;
+
     @ManyToOne
     @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("gameweek_id")
-    private Gameweek gameweek;
+    @JsonProperty("fixture_id")
+    private Fixture fixture;
 
-    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 4)")
+    @JsonProperty("type")
+    @Enumerated(EnumType.STRING)
+    private LineUpType lineUpType;
+
     private Integer goalsScored;
-
-    @Formula("(SELECT count(*) FROM event e WHERE e.related_player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 4)")
     private Integer assists;
-
-    private Integer goalsConceded;
-
-    private Integer minutesPlayed;
-
-    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 6)")
     private Integer ownGoals;
-
-    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 1)")
     private Integer yellowCards;
-
-    @Formula("(SELECT count(*) FROM event e WHERE e.player_id = player_id AND e.gameweek_id = gameweek_id AND e.type = 3)")
     private Integer redCards;
-
+    private Integer yellowRedCards;
+    private Integer missedPens;
+    private Integer pensScored;
+    private Long subbedOnEventId;
+    private Long subbedOffEventId;
+    private Boolean cleanSheet;
+    private Integer goalsConceded;
+    private Double rating;
+    private Integer bonus;
+    private Integer minutesPlayed;
     private Integer points;
 
-    public PlayerGameweek(Player player, Gameweek gameweek) {
+
+    public PlayerGameweek(long id) {
+
+    }
+
+    public PlayerGameweek(Player player, Team team, Fixture fixture, LineUpType lineUpType, Integer goalsScored,
+                          Integer assists, Integer ownGoals, Integer yellowCards, Integer redCards, Integer yellowRedCards,
+                          Integer missedPens, Integer pensScored, Long subbedOnEventId, Long subbedOffEventId, Boolean cleanSheet,
+                          Integer goalsConceded, Double rating, Integer bonus, Integer minutesPlayed, Integer points) {
         this.player = player;
-        this.gameweek = gameweek;
-        this.goalsScored = 0;
-        this.goalsConceded = 0;
-        this.assists = 0;
-        this.minutesPlayed = 0;
-        this.redCards = 0;
-        this.yellowCards = 0;
-        this.ownGoals = 0;
+        this.team = team;
+        this.fixture = fixture;
+        this.lineUpType = lineUpType;
+        this.goalsScored = goalsScored;
+        this.assists = assists;
+        this.ownGoals = ownGoals;
+        this.yellowCards = yellowCards;
+        this.redCards = redCards;
+        this.yellowRedCards = yellowRedCards;
+        this.missedPens = missedPens;
+        this.pensScored = pensScored;
+        this.subbedOnEventId = subbedOnEventId;
+        this.subbedOffEventId = subbedOffEventId;
+        this.cleanSheet = cleanSheet;
+        this.goalsConceded = goalsConceded;
+        this.rating = rating;
+        this.bonus = bonus;
+        this.minutesPlayed = minutesPlayed;
+        this.points = points;
     }
 
     public PlayerGameweek() {}
@@ -77,20 +98,12 @@ public class PlayerGameweek extends AuditModel {
         this.player = player;
     }
 
-    public Integer getPoints() {
-        return points;
+    public Fixture getFixture() {
+        return fixture;
     }
 
-    public void setPoints(Integer points) {
-        this.points = points;
-    }
-
-    public Gameweek getGameweek() {
-        return gameweek;
-    }
-
-    public void setGameweek(Gameweek gameweek) {
-        this.gameweek = gameweek;
+    public void setFixture(Fixture fixture) {
+        this.fixture = fixture;
     }
 
     public Integer getGoalsScored() {
@@ -101,14 +114,6 @@ public class PlayerGameweek extends AuditModel {
         this.goalsScored = goalsScored;
     }
 
-    public Integer getGoalsConceded() {
-        return goalsConceded;
-    }
-
-    public void setGoalsConceded(Integer goalsConceded) {
-        this.goalsConceded = goalsConceded;
-    }
-
     public Integer getAssists() {
         return assists;
     }
@@ -117,12 +122,28 @@ public class PlayerGameweek extends AuditModel {
         this.assists = assists;
     }
 
+    public Integer getGoalsConceded() {
+        return goalsConceded;
+    }
+
+    public void setGoalsConceded(Integer goalsConceded) {
+        this.goalsConceded = goalsConceded;
+    }
+
     public Integer getMinutesPlayed() {
         return minutesPlayed;
     }
 
     public void setMinutesPlayed(Integer minutesPlayed) {
         this.minutesPlayed = minutesPlayed;
+    }
+
+    public Integer getOwnGoals() {
+        return ownGoals;
+    }
+
+    public void setOwnGoals(Integer ownGoals) {
+        this.ownGoals = ownGoals;
     }
 
     public Integer getYellowCards() {
@@ -141,11 +162,107 @@ public class PlayerGameweek extends AuditModel {
         this.redCards = redCards;
     }
 
-    public Integer getOwnGoals() {
-        return ownGoals;
+    public Long getSubbedOnEventId() {
+        return subbedOnEventId;
     }
 
-    public void setOwnGoals(Integer ownGoals) {
-        this.ownGoals = ownGoals;
+    public void setSubbedOnEventId(Long subbedOnEventId) {
+        this.subbedOnEventId = subbedOnEventId;
+    }
+
+    public Long getSubbedOffEventId() {
+        return subbedOffEventId;
+    }
+
+    public void setSubbedOffEventId(Long subbedOffEventId) {
+        this.subbedOffEventId = subbedOffEventId;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public Integer getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(Integer bonus) {
+        this.bonus = bonus;
+    }
+
+    public LineUpType getLineUpType() {
+        return lineUpType;
+    }
+
+    public void setLineUpType(LineUpType lineUpType) {
+        this.lineUpType = lineUpType;
+    }
+
+    public Integer getMissedPens() {
+        return missedPens;
+    }
+
+    public void setMissedPens(Integer missedPens) {
+        this.missedPens = missedPens;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public Integer getYellowRedCards() {
+        return yellowRedCards;
+    }
+
+    public void setYellowRedCards(Integer yellowRedCards) {
+        this.yellowRedCards = yellowRedCards;
+    }
+
+    public void setCleanSheet(Boolean cleanSheet) {
+        this.cleanSheet = cleanSheet;
+    }
+
+    public Boolean getCleanSheet() {
+        return cleanSheet;
+    }
+
+    public Integer getPensScored() {
+        return pensScored;
+    }
+
+    public void setPensScored(Integer pensScored) {
+        this.pensScored = pensScored;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    @JsonProperty("stats")
+    private void setDetails(JsonNode stats) {
+        minutesPlayed = stats.get("other").get("minutes_played").asInt();
+        goalsConceded = stats.get("goals").get("conceded").asInt();
+        goalsScored = stats.get("goals").get("scored").asInt();
+        assists = stats.get("goals").get("assists").asInt();
+        ownGoals = stats.get("goals").get("owngoals").asInt();
+        yellowCards = stats.get("cards").get("yellowcards").asInt();
+        redCards = stats.get("cards").get("redcards").asInt();
+        yellowRedCards = stats.get("cards").get("yellowredcards").asInt();
+        missedPens = stats.get("other").get("pen_missed").asInt();
+        pensScored = stats.get("other").get("pen_scored").asInt();
+        rating = stats.get("rating").asDouble();
+        rating = stats.get("rating").asDouble();
     }
 }
