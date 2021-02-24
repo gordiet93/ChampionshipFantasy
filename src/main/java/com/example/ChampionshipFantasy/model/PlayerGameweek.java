@@ -1,31 +1,30 @@
 package com.example.ChampionshipFantasy.model;
 
 import com.example.ChampionshipFantasy.model.enums.LineUpType;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
+@EntityListeners(PlayerGameweekListener.class)
 @Entity
-public class PlayerGameweek extends AuditModel {
+public class PlayerGameweek extends AuditModel implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE)
-    private Long id;
+    @EmbeddedId
+    private PlayerGameweekId playerGameweekId;
 
     @ManyToOne
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("player_id")
+    @JoinColumn(name = "player_id", insertable = false, updatable = false)
     private Player player;
 
-    @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("team_id")
     private Team team;
 
     @ManyToOne
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("fixture_id")
+    @JoinColumn(name = "fixture_id", insertable = false, updatable = false)
     private Fixture fixture;
 
     @JsonProperty("type")
@@ -49,45 +48,27 @@ public class PlayerGameweek extends AuditModel {
     private Integer minutesPlayed;
     private Integer points;
 
-
-    public PlayerGameweek(long id) {
-
+    public PlayerGameweek(PlayerGameweekId playerGameweekId) {
+        this.playerGameweekId = playerGameweekId;
     }
 
-    public PlayerGameweek(Player player, Team team, Fixture fixture, LineUpType lineUpType, Integer goalsScored,
-                          Integer assists, Integer ownGoals, Integer yellowCards, Integer redCards, Integer yellowRedCards,
-                          Integer missedPens, Integer pensScored, Long subbedOnEventId, Long subbedOffEventId, Boolean cleanSheet,
-                          Integer goalsConceded, Double rating, Integer bonus, Integer minutesPlayed, Integer points) {
+    @JsonCreator
+    public PlayerGameweek(@JsonProperty("player_id") final Player player,
+                          @JsonProperty("fixture_id") final Fixture fixture) {
         this.player = player;
-        this.team = team;
         this.fixture = fixture;
-        this.lineUpType = lineUpType;
-        this.goalsScored = goalsScored;
-        this.assists = assists;
-        this.ownGoals = ownGoals;
-        this.yellowCards = yellowCards;
-        this.redCards = redCards;
-        this.yellowRedCards = yellowRedCards;
-        this.missedPens = missedPens;
-        this.pensScored = pensScored;
-        this.subbedOnEventId = subbedOnEventId;
-        this.subbedOffEventId = subbedOffEventId;
-        this.cleanSheet = cleanSheet;
-        this.goalsConceded = goalsConceded;
-        this.rating = rating;
-        this.bonus = bonus;
-        this.minutesPlayed = minutesPlayed;
-        this.points = points;
+        this.playerGameweekId = new PlayerGameweekId(player.getId(), fixture.getId());
     }
 
-    public PlayerGameweek() {}
-
-    public Long getId() {
-        return id;
+    public PlayerGameweek() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public PlayerGameweekId getPlayerGameweekId() {
+        return playerGameweekId;
+    }
+
+    public void setPlayerGameweekId(PlayerGameweekId playerGameweekId) {
+        this.playerGameweekId = playerGameweekId;
     }
 
     public Player getPlayer() {

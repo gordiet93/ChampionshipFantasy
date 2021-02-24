@@ -1,14 +1,13 @@
 package com.example.ChampionshipFantasy.model;
 
-import com.example.ChampionshipFantasy.deserializer.EventListDe;
 import com.example.ChampionshipFantasy.model.enums.FixtureStatus;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class Fixture {
     @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL)
     private List<Event> events;
 
-    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.MERGE)
     private List<PlayerGameweek> playerGameweeks;
 
     private FixtureStatus status;
@@ -42,7 +41,10 @@ public class Fixture {
     @Transient
     private Integer mintuesPlayed;
 
-    public Fixture() {}
+    //have to instantiate setPlayergameweeks as it's called twice and adding to this list
+    public Fixture() {
+        this.playerGameweeks = new ArrayList<>();
+    }
 
     public Fixture(Long id) {
         this.id = id;
@@ -128,12 +130,12 @@ public class Fixture {
         ObjectMapper mapper = new ObjectMapper();
         events = Arrays.asList(mapper.readValue(data.get("data").traverse(), Event[].class));
     }
-//
-//    @JsonProperty("lineup")
-//    @JsonAlias("bench")
-//    private void setPlayerGameweeks(JsonNode data) throws IOException {
-//        ObjectMapper mapper = new ObjectMapper();
-//        playerGameweeks.addAll(Arrays.asList(mapper.readValue(data.get("data").traverse(), PlayerGameweek[].class)));
-//    }
+
+    @JsonProperty("lineup")
+    @JsonAlias("bench")
+    private void setPlayerGameweeks(JsonNode data) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        playerGameweeks.addAll(Arrays.asList(mapper.readValue(data.get("data").traverse(), PlayerGameweek[].class)));
+    }
 }
 

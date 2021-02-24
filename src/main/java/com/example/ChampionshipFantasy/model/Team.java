@@ -1,8 +1,10 @@
 package com.example.ChampionshipFantasy.model;
 
+import com.example.ChampionshipFantasy.deserializer.PlayerListDeserializer;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.sun.javafx.binding.SelectBinding;
 
 import javax.persistence.*;
@@ -21,6 +23,8 @@ public class Team extends AuditModel {
     private Long id;
     private String name;
 
+    @JsonProperty("squad")
+    @JsonDeserialize(using = PlayerListDeserializer.class)
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Player> players;
 
@@ -58,11 +62,4 @@ public class Team extends AuditModel {
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
-
-    @JsonProperty("squad")
-    private void setPlayers(JsonNode data) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        players = Arrays.asList(mapper.readValue(data.get("data").traverse(), Player[].class));
-    }
-
 }

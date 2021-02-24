@@ -3,6 +3,7 @@ package com.example.ChampionshipFantasy.model;
 import com.example.ChampionshipFantasy.model.enums.LineUpType;
 import com.example.ChampionshipFantasy.model.enums.Position;
 
+import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.xml.crypto.dsig.keyinfo.PGPData;
 import java.util.ArrayList;
@@ -10,10 +11,7 @@ import java.util.List;
 
 public class PlayerGameweekListener {
 
-
-    ///put set points in different method
-    @PreUpdate
-    public void prePersist(PlayerGameweek pG) {
+    public void preUpdate(PlayerGameweek pG) {
         pG.setPoints(calculateStatsAndPoints(pG));
     }
 

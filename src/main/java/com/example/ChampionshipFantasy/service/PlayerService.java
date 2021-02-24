@@ -1,7 +1,6 @@
 package com.example.ChampionshipFantasy.service;
 
 import com.example.ChampionshipFantasy.model.Player;
-import com.example.ChampionshipFantasy.model.Team;
 import com.example.ChampionshipFantasy.repository.PlayerRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,14 +16,13 @@ import java.net.URL;
 @Service
 public class PlayerService {
 
-
     private PlayerRepository playerRepository;
-
 
     @Autowired
     public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
     }
+
 
     public Player getPlayerandSave(long playerId) {
         Player player = new Player();

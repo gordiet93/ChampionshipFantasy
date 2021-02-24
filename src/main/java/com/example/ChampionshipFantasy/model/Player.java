@@ -26,9 +26,12 @@ public class Player extends AuditModel {
     @Id
     @JsonProperty("player_id")
     private Long id;
+
+    @JsonProperty("display_name")
     private String name;
+
+    @JsonProperty("nationality")
     private String nationality;
-    private Integer number;
 
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="player")
     private List<PlayerGameweek> playerGameweeks;
@@ -37,6 +40,7 @@ public class Player extends AuditModel {
     //@JsonBackReference
     @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne
+    @JsonProperty(value = "team_id")
     private Team team;
 
     @Enumerated(EnumType.STRING)
@@ -72,14 +76,6 @@ public class Player extends AuditModel {
         this.nationality = nationality;
     }
 
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
     public List<PlayerGameweek> getPlayerGameweeks() {
         return playerGameweeks;
     }
@@ -104,11 +100,8 @@ public class Player extends AuditModel {
         this.position = position;
     }
 
-    @JsonProperty("player")
+    @JsonProperty("position")
     private void setDetails(JsonNode node) {
-        name = node.get("data").get("display_name").asText();
-        nationality = node.get("data").get("nationality").asText();
-        position = Position.valueOf(node.get("data").get("position").get("data").get("name").asText().toUpperCase());
-        this.team = new Team(node.get("data").get("team_id").longValue());
+        position = Position.valueOf(node.get("data").get("name").asText().toUpperCase());
     }
 }

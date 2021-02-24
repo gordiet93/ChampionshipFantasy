@@ -29,7 +29,6 @@ public class Event extends AuditModel {
     @ManyToOne(fetch = FetchType.LAZY)
     private Fixture fixture;
 
-
     @JsonProperty(value = "team_id")
     @ManyToOne
     @NotFound(action = NotFoundAction.IGNORE)
