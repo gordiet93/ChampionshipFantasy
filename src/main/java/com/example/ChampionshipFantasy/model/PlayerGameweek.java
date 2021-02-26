@@ -21,6 +21,7 @@ public class PlayerGameweek extends AuditModel implements Serializable {
     private Player player;
 
     @JsonProperty("team_id")
+    @ManyToOne
     private Team team;
 
     @ManyToOne
@@ -58,6 +59,9 @@ public class PlayerGameweek extends AuditModel implements Serializable {
         this.player = player;
         this.fixture = fixture;
         this.playerGameweekId = new PlayerGameweekId(player.getId(), fixture.getId());
+        this.bonus = 0;
+        this.cleanSheet = false;
+        this.points = 0;
     }
 
     public PlayerGameweek() {

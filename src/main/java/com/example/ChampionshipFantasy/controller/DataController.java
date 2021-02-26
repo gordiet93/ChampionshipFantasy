@@ -5,6 +5,7 @@ import com.example.ChampionshipFantasy.model.Player;
 import com.example.ChampionshipFantasy.model.enums.LineUpType;
 import com.example.ChampionshipFantasy.repository.*;
 import com.example.ChampionshipFantasy.service.FantasyTeamService;
+import com.example.ChampionshipFantasy.service.PlayerGameweekService;
 import com.example.ChampionshipFantasy.service.PlayerService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,11 +24,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
+import static com.example.ChampionshipFantasy.model.enums.EventType.*;
 import static java.util.Comparator.comparing;
 
 @RestController
 @RequestMapping("/data")
 public class DataController {
+
+    private static final String URLBASE = "https://soccer.sportmonks.com/api/v2.0/";
+    private static final String APITOKEN = "api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J";
 
     private TeamRepository teamRepository;
     private GameweekRepository gameweekRepository;
@@ -36,11 +41,13 @@ public class DataController {
     private PlayerGameweekRepository playerGameweekRepository;
     private FantasyTeamService fantasyTeamService;
     private PlayerService playerService;
+    private PlayerGameweekService playerGameweekService;
 
     @Autowired
     public DataController(TeamRepository teamRepository, GameweekRepository gameweekRepository, PlayerRepository playerRepository,
                           FixtureRepository fixtureRepository, PlayerGameweekRepository playerGameweekRepository,
-                          FantasyTeamService fantasyTeamService, PlayerService playerService) {
+                          FantasyTeamService fantasyTeamService, PlayerService playerService,
+                          PlayerGameweekService playerGameweekService) {
         this.teamRepository = teamRepository;
         this.gameweekRepository = gameweekRepository;
         this.playerRepository = playerRepository;
@@ -48,6 +55,7 @@ public class DataController {
         this.playerGameweekRepository = playerGameweekRepository;
         this.fantasyTeamService = fantasyTeamService;
         this.playerService = playerService;
+        this.playerGameweekService = playerGameweekService;
     }
 
     @PostMapping("/loaddata")
@@ -97,8 +105,8 @@ public class DataController {
         ObjectMapper mapper = new ObjectMapper();
         try {
 
-            String s = callURL("https://soccer.sportmonks.com/api/v2.0/teams/season/17141?include=squad," +
-                    "squad.player,squad.player.position&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J" );
+            String s = callURL(URLBASE + "teams/season/17141?include=squad,squad.player,squad.player.position&"
+                    + APITOKEN);
             JsonNode node = mapper.readTree(s);
             List<Team> teams = Arrays.asList(mapper.readValue(node.get("data").traverse(), Team[].class));
             teamRepository.saveAll(teams);
@@ -110,7 +118,7 @@ public class DataController {
     private void loadGameweeksAndFixtures() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String s = callURL("https://soccer.sportmonks.com/api/v2.0/seasons/17141?include=rounds.fixtures&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J" );
+            String s = callURL(URLBASE + "seasons/17141?include=rounds.fixtures&" + APITOKEN);
             JsonNode node = mapper.readTree(s);
 
             List<Gameweek> gameweeks = Arrays.asList(mapper.readValue(node.get("data").get("rounds").get("data").traverse(), Gameweek[].class));
@@ -121,29 +129,86 @@ public class DataController {
         }
     }
 
+    //still need to get the subbed on and off ids
     private void loadLive() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String s = callURL("https://soccer.sportmonks.com/api/v2.0/rounds/" + "194993" +
-                    "?include=fixtures.events,fixtures.lineup,fixtures.bench&api_token=udPYhTkSHKOk36Oy4Dz1NrZZ6aICE0ffzdtk8lsLkcLUR6DPcfE68beqyQ4J");
-            JsonNode node = mapper.readTree(s);
-            List<Fixture> fixtures = Arrays.asList(mapper.readValue(node.get("data")
-                    .findValue("fixtures").get("data").traverse(), Fixture[].class));
+        for (Gameweek gameweek : gameweekRepository.findAll()) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String s = callURL(URLBASE + "rounds/" + gameweek.getId() +
+                        "?include=fixtures.events,fixtures.lineup,fixtures.bench&" + APITOKEN);
+                JsonNode node = mapper.readTree(s);
+                List<Fixture> fixtures = Arrays.asList(mapper.readValue(node.get("data")
+                        .findValue("fixtures").get("data").traverse(), Fixture[].class));
 
-            for (Fixture fixture : fixtures) {
-                fixture.getPlayerGameweeks().sort((o1, o2) -> Double.compare(o2.getRating(), o1.getRating()));
-                for (PlayerGameweek pg : fixture.getPlayerGameweeks()) {
-                    long playerId = pg.getPlayer().getId();
-                    if (!playerRepository.existsById(playerId)) {
-                        playerService.getPlayerandSave(playerId);
+                for (Fixture fixture : fixtures) {
+                    List<PlayerGameweek> playerGameweeks = fixture.getPlayerGameweeks();
+                    awardBonusPoints(playerGameweeks);
+
+                    long homeTeamId = fixture.getHomeTeam().getId();
+                    long awayTeamId = fixture.getAwayTeam().getId();
+
+                    List<Event> homeTeamGoalsConceded = getGoalsConcededForTeam(fixture.getEvents(), homeTeamId);
+                    List<Event> awayTeamGoalsConceded = getGoalsConcededForTeam(fixture.getEvents(), awayTeamId);
+
+                    for (PlayerGameweek pg : playerGameweeks) {
+                        long playerId = pg.getPlayer().getId();
+                        if (!playerRepository.existsById(playerId)) {
+                            playerService.getPlayerandSave(playerId);
+                        }
+
+                        checkAndSetSubbedOffandOnIds(fixture.getEvents(), pg);
+
+                        if (pg.getTeam().getId() == homeTeamId)
+                            pg.setPoints(playerGameweekService.calculateTotalPoints(pg, homeTeamGoalsConceded));
+                        else pg.setPoints(playerGameweekService.calculateTotalPoints(pg, awayTeamGoalsConceded));
+
+                        playerGameweekRepository.save(pg);
                     }
-
-                  playerGameweekRepository.save(pg);
                 }
                 fixtureRepository.saveAll(fixtures);
+            } catch (IOException e) {
+                System.out.println(e);
             }
-        } catch (IOException e) {
-            System.out.println(e);
+        }
+    }
+
+    private void awardBonusPoints(List<PlayerGameweek> playerGameweeks) {
+        playerGameweeks.sort((o1, o2) -> Double.compare(o2.getRating(), o1.getRating()));
+        int bonusPoints = 3;
+        for (int i = 0; i < 3; i++) {
+            playerGameweeks.get(i).setBonus(bonusPoints);
+            bonusPoints--;
+        }
+    }
+
+    //should probably be in a team service class
+    private List<Event> getGoalsConcededForTeam(List<Event> events, long teamId) {
+        List<Event> goals = new ArrayList<>();
+        for (Event event : events) {
+            if (event.getTeam().getId() != teamId) {
+                switch (event.getType()) {
+                    case GOAL:
+                    case PENALTY:
+                        //double check team id for OG
+                    case OWNGOAL:
+                        goals.add(event);
+                        break;
+                    default:
+                }
+            }
+        }
+        return goals;
+    }
+
+    private void checkAndSetSubbedOffandOnIds(List<Event> events, PlayerGameweek pg) {
+        for (Event event : events) {
+            if (event.getType() == SUBSTITUTION) {
+                if (event.getPlayer().getId().equals(pg.getPlayer().getId())) {
+                    pg.setSubbedOnEventId(event.getId());
+                } else if (event.getRelatedPlayer().getId().equals(pg.getPlayer().getId())) {
+                    pg.setSubbedOffEventId(event.getId());
+                }
+            }
         }
     }
 
@@ -157,6 +222,7 @@ public class DataController {
         }
     }
 
+    // work out what class to put this in
     private String callURL(String url1) throws IOException {
         String contentString;
         URL url = new URL(url1);

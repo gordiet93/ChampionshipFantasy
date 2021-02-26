@@ -12,16 +12,16 @@ import java.util.List;
 @Entity
 public class Player extends AuditModel {
 
-    static final int ZERO_MINS_POINTS = 0;
-    static final int ABOVE_MINS_THRESHOLD_POINTS = 2;
-    static final int BELOW_MINS_THRESHOLD_POINTS = 1;
-    static final int MINS_THRESHOLD = 60;
-    static final int ASSIST_POINTS = 3;
-    static final int YELLOW_CARD_POINTS = -1;
-    static final int RED_CARD_POINTS = -3;
-    static final int YELLOW_RED_CARD_POINTS = -2;
-    static final int OWN_GOAL_POINTS = -2;
-    static final int MISSED_PEN_POINTS = -3;
+    public static final int ZERO_MINS_POINTS = 0;
+    public static final int ABOVE_MINS_THRESHOLD_POINTS = 2;
+    public static final int BELOW_MINS_THRESHOLD_POINTS = 1;
+    public static final int MINS_THRESHOLD = 60;
+    public static final int ASSIST_POINTS = 3;
+    public static final int YELLOW_CARD_POINTS = -1;
+    public static final int RED_CARD_POINTS = -3;
+    public static final int YELLOW_RED_CARD_POINTS = -2;
+    public static final int OWN_GOAL_POINTS = -2;
+    public static final int MISSED_PEN_POINTS = -3;
 
     @Id
     @JsonProperty("player_id")
@@ -104,4 +104,6 @@ public class Player extends AuditModel {
     private void setDetails(JsonNode node) {
         position = Position.valueOf(node.get("data").get("name").asText().toUpperCase());
     }
+
+    //todo implement overridden equals method, then replace player.getid = pg.getplayer.getid etc
 }

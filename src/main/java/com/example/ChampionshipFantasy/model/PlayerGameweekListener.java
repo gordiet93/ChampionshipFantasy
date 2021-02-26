@@ -17,7 +17,7 @@ public class PlayerGameweekListener {
 
     private int calculateStatsAndPoints(PlayerGameweek pG) {
         calculatePlayerStats(pG);
-        return calculateTotalPoints(pG);
+        return 0;
     }
 
     private void calculatePlayerStats(PlayerGameweek pG) {
@@ -101,89 +101,26 @@ public class PlayerGameweekListener {
                 }
             }
 
-            //goals conceded not working correctly, says 4 in db when it should be 5
-            int goalsConceded = calculateGoalsConcededByPlayer(pG.getLineUpType(), goalsConcededByTeam,
-                    pG.getSubbedOffEventId(), pG.getSubbedOnEventId());
-
-            boolean cleanSheet = checkCleanSheet(goalsConceded, pG.getMinutesPlayed());
+//            //goals conceded not working correctly, says 4 in db when it should be 5
+//            int goalsConceded = calculateGoalsConcededByPlayer(pG.getLineUpType(), goalsConcededByTeam,
+//                    pG.getSubbedOffEventId(), pG.getSubbedOnEventId());
+//
+//            boolean cleanSheet = checkCleanSheet(goalsConceded, pG.getMinutesPlayed());
 
             //@preupdate is being called the number of times the size of events. need to check why and fix
             System.out.println("in with player id = " + playerId + "event size: " + events.size());
 
-            pG.setCleanSheet(cleanSheet);
-            pG.setGoalsScored(goalsScored);
-            pG.setAssists(assists);
-            pG.setOwnGoals(ownGoals);
-            pG.setMissedPens(missedPens);
-            pG.setYellowRedCards(yellowRedCards);
-            pG.setYellowCards(yellowCards);
-            pG.setRedCards(redCards);
-            pG.setGoalsConceded(goalsConceded);
-            pG.setPensScored(pensScored);
+//            pG.setCleanSheet(cleanSheet);
+//            pG.setGoalsScored(goalsScored);
+//            pG.setAssists(assists);
+//            pG.setOwnGoals(ownGoals);
+//            pG.setMissedPens(missedPens);
+//            pG.setYellowRedCards(yellowRedCards);
+//            pG.setYellowCards(yellowCards);
+//            pG.setRedCards(redCards);
+//            pG.setGoalsConceded(goalsConceded);
+//            pG.setPensScored(pensScored);
         }
     }
 
-    private int calculateTotalPoints(PlayerGameweek pG) {
-        int total = 0;
-        Position position = pG.getPlayer().getPosition();
-
-        total += calculateMinutesPlayedPoints(pG.getMinutesPlayed());
-        total += pG.getGoalsScored() * position.getGoalPoints();
-        total += calculateGoalsConcededPoints(pG.getGoalsConceded(), pG.getCleanSheet(), position);
-        total += pG.getAssists() * Player.ASSIST_POINTS;
-        total += pG.getOwnGoals() * Player.OWN_GOAL_POINTS;
-        total += pG.getMissedPens() * Player.MISSED_PEN_POINTS;
-        total += pG.getYellowCards() * Player.YELLOW_CARD_POINTS;
-        total += pG.getRedCards() * Player.RED_CARD_POINTS;
-        total += pG.getYellowRedCards() * Player.YELLOW_RED_CARD_POINTS;
-
-        return total;
-    }
-
-    private int calculateMinutesPlayedPoints(int minsPlayed) {
-        return (minsPlayed == 0 ? Player.ZERO_MINS_POINTS : minsPlayed < Player.MINS_THRESHOLD
-                ? Player.BELOW_MINS_THRESHOLD_POINTS : Player.ABOVE_MINS_THRESHOLD_POINTS);
-    }
-
-    private boolean checkCleanSheet(int goalsConceded, int minsPlayed) {
-        return (goalsConceded == 0 && minsPlayed >= Player.MINS_THRESHOLD);
-    }
-
-    private int calculateGoalsConcededPoints(int goalsConceded, boolean cleanSheet, Position position) {
-        if (cleanSheet) {
-            return position.getCleanSheetPoints();
-        } else if (position == Position.GOALKEEPER || position == Position.DEFENDER) {
-            return -(goalsConceded / 2);
-        }
-        return 0;
-    }
-
-    private int calculateGoalsConcededByPlayer(LineUpType lineUpType, List<Event> goalsConcededByTeam, Long subbedOffEventId, Long subbedOnEventId) {
-        int goalsConceded = 0;
-        if (goalsConcededByTeam.isEmpty()) {
-            return goalsConceded;
-        }
-
-        switch (lineUpType) {
-            case STARTER:
-                if (subbedOffEventId == null) goalsConceded = goalsConcededByTeam.size();
-                else for (Event event : goalsConcededByTeam) {
-                    if (event.getId() < subbedOffEventId) goalsConceded++;
-                }
-                break;
-            case BENCHED:
-                if (subbedOnEventId != null && subbedOffEventId != null) {
-                    for (Event event : goalsConcededByTeam) {
-                        if (event.getId() > subbedOnEventId && event.getId() < subbedOffEventId)
-                            goalsConceded++;
-                    }
-                } else if (subbedOnEventId != null) {
-                    for (Event event : goalsConcededByTeam) {
-                        if (event.getId() > subbedOnEventId) goalsConceded++;
-                    }
-                }
-                break;
-        }
-        return goalsConceded;
-    }
 }
